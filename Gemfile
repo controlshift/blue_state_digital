@@ -1,5 +1,4 @@
 source "http://rubygems.org"
 
-gem 'httpotato'
-
+# Specify your gem's dependencies in blue_state_digital.gemspec
 gemspec
