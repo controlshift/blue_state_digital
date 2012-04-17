@@ -19,5 +19,7 @@ Gem::Specification.new do |s|
 
   # specify any dependencies here
   s.add_development_dependency "rspec"
-  s.add_runtime_dependency "httpotato"
+  s.add_development_dependency "webmock"
+  s.add_development_dependency "timecop"
+  s.add_dependency "rest-client"
 end
