@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
   s.email       = ["woodhull@gmail.com"]
   s.homepage    = "https://github.com/controlshift/blue_state_digital"
   s.summary     = "Simple wrapper for Blue State Digital."
-  s.description = %q{TODO: Write a gem description}
+  s.description = %q{Simple wrapper for Blue State Digital.}
   s.rubyforge_project = s.name
 
   s.files         = `git ls-files`.split("\n")
