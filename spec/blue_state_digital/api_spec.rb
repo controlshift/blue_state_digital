@@ -49,13 +49,22 @@ describe BlueStateDigital::API do
   end
   
   describe "Constituent (cons) API Calls" do
-    it "should set constituent data" do
+    it "should set constituent data by xml" do
       stub_request(:any, /.*page\/api\/cons\/set_constituent_data.*/).with do |request|
-        request.body.should == 'some xml data'
+        request.body.should == '<some xml data>'
         true
       end
 
-      api.set_constituent_data('some xml data')
+      api.set_constituent_data('<some xml data>')
+    end
+    
+    it "should set constituent data by hash" do
+      stub_request(:any, /.*page\/api\/cons\/set_constituent_data.*/).with do |request|
+        request.body.should == %q{<?xml version="1.0" encoding="utf-8"?><api><cons><firstname></firstname><lastname></lastname><is_banned>0</is_banned><create_dt></create_dt></cons></api>}
+        true
+      end
+
+      api.set_constituent_data({})
     end
   end
 end

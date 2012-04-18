@@ -1,6 +1,7 @@
 require 'rubygems'
 require 'openssl'
 require 'rest_client'
+require_relative 'constituent_data_builder'
 
 module BlueStateDigital
   class API
@@ -13,7 +14,8 @@ module BlueStateDigital
       @client = RestClient::Resource.new(api_host)
     end
     
-    def set_constituent_data(xml_data)
+    def set_constituent_data(data)
+      xml_data = data.is_a?(Hash) ? ConstituentDataBuilder.from_hash(data) : data
       perform_request '/cons/set_constituent_data', {}, "POST", xml_data
     end
     
