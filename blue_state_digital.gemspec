@@ -5,8 +5,8 @@ require "blue_state_digital/version"
 Gem::Specification.new do |s|
   s.name        = "blue_state_digital"
   s.version     = BlueStateDigital::VERSION
-  s.authors     = ["Nathan Woodhull"]
-  s.email       = ["woodhull@gmail.com"]
+  s.authors     = ["Nathan Woodhull", "Sean Ho"]
+  s.email       = ["woodhull@gmail.com", "seanho@thoughtworks.com"]
   s.homepage    = "https://github.com/controlshift/blue_state_digital"
   s.summary     = "Simple wrapper for Blue State Digital."
   s.description = %q{Simple wrapper for Blue State Digital.}
