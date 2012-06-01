@@ -1,8 +1,8 @@
 require 'spec_helper'
-require 'blue_state_digital/constituent_data_builder'
+require 'blue_state_digital/models/constituent_data'
 
-describe BlueStateDigital::ConstituentDataBuilder do
-  it "should convert hash to corresponding xml data" do
+describe BlueStateDigital::Models::ConstituentData do
+  it "#to_xml" do
     timestamp = Time.now
     
     data = { 
@@ -11,7 +11,8 @@ describe BlueStateDigital::ConstituentDataBuilder do
       last_name: 'Last', 
       is_banned: false, 
       created_at: timestamp,
-      emails: [{ email: "email@email.com", email_type: "work", is_subscribed: true, is_primary: true }]
+      emails: [{ email: "email@email.com", email_type: "work", is_subscribed: true, is_primary: true }],
+      group_ids: [3, 5]
     }
     
     xml_data = %q{<?xml version="1.0" encoding="utf-8"?>}
@@ -27,9 +28,11 @@ describe BlueStateDigital::ConstituentDataBuilder do
     xml_data << "<is_subscribed>1</is_subscribed>"
     xml_data << "<is_primary>1</is_primary>"
     xml_data << "</cons_email>"
+    xml_data << "<cons_group id=\"3\"/>"
+    xml_data << "<cons_group id=\"5\"/>"
     xml_data << "</cons>"
     xml_data << "</api>"
     
-    BlueStateDigital::ConstituentDataBuilder.from_hash(data).should == xml_data
+    BlueStateDigital::Models::ConstituentData.new(data).to_xml.should == xml_data
   end
 end

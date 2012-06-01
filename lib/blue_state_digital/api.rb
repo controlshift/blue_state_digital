@@ -1,7 +1,7 @@
 require 'rubygems'
 require 'openssl'
 require 'rest_client'
-require_relative 'constituent_data_builder'
+Dir[File.dirname(__FILE__) + '/models/*.rb'].each {|file| require file }
 
 module BlueStateDigital
   class API
@@ -15,8 +15,11 @@ module BlueStateDigital
     end
     
     def set_constituent_data(data)
-      xml_data = data.is_a?(Hash) ? ConstituentDataBuilder.from_hash(data) : data
-      perform_request '/cons/set_constituent_data', {}, "POST", xml_data
+      perform_request '/cons/set_constituent_data', {}, "POST", BlueStateDigital::Models::ConstituentData.new(data).to_xml
+    end
+    
+    def add_constituent_groups(data)
+      perform_request '/cons_group/add_constituent_groups', {}, "POST", BlueStateDigital::Models::ConstituentGroup.new(data).to_xml
     end
     
     def perform_request(call, params = {}, method = "GET", body = nil)

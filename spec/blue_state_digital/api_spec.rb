@@ -67,4 +67,15 @@ describe BlueStateDigital::API do
       api.set_constituent_data({})
     end
   end
+  
+  describe "Constituent Group (cons_group) API Calls" do
+    it "should add constituent groups" do
+      stub_request(:any, /.*page\/api\/cons_group\/add_constituent_groups.*/).with do |request|
+        request.body.should == %q{<?xml version="1.0" encoding="utf-8"?><api><cons_group></cons_group></api>}
+        true
+      end
+
+      api.add_constituent_groups({})
+    end
+  end
 end
