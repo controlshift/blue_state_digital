@@ -1,18 +1,17 @@
 require 'spec_helper'
-require 'blue_state_digital/models/constituent_data'
 
-describe BlueStateDigital::Models::ConstituentData do
-  it "#to_xml" do
-    timestamp = Time.now
+describe BlueStateDigital::ConstituentData do
+  it "#set" do
+    timestamp = Time.now.to_i
     
     data = { 
       id: 'id', 
-      first_name: 'First', 
-      last_name: 'Last', 
-      is_banned: false, 
-      created_at: timestamp,
-      emails: [{ email: "email@email.com", email_type: "work", is_subscribed: true, is_primary: true }],
-      group_ids: [3, 5]
+      firstname: 'First', 
+      lastname: 'Last', 
+      is_banned: 0, 
+      create_dt: timestamp,
+      emails: [BlueStateDigital::ConstituentEmail.new({ email: "email@email.com", email_type: "work", is_subscribed: 1, is_primary: 1 })],
+      groups: [BlueStateDigital::ConstituentGroup.new({ id: 3 }), BlueStateDigital::ConstituentGroup.new({ id: 5 })]
     }
     
     xml_data = %q{<?xml version="1.0" encoding="utf-8"?>}
@@ -21,7 +20,7 @@ describe BlueStateDigital::Models::ConstituentData do
     xml_data << "<firstname>First</firstname>"
     xml_data << "<lastname>Last</lastname>"
     xml_data << "<is_banned>0</is_banned>"
-    xml_data << "<create_dt>#{timestamp.utc.to_i}</create_dt>"
+    xml_data << "<create_dt>#{timestamp}</create_dt>"
     xml_data << "<cons_email>"
     xml_data << "<email>email@email.com</email>"
     xml_data << "<email_type>work</email_type>"
@@ -33,6 +32,8 @@ describe BlueStateDigital::Models::ConstituentData do
     xml_data << "</cons>"
     xml_data << "</api>"
     
-    BlueStateDigital::Models::ConstituentData.new(data).to_xml.should == xml_data
+    BlueStateDigital::Connection.should_receive(:perform_request).with('/cons/set_constituent_data', {}, "POST", xml_data)
+    
+    BlueStateDigital::ConstituentData.set(data)
   end
 end
