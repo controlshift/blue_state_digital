@@ -31,7 +31,7 @@ describe BlueStateDigital::ConstituentGroup do
   it "should add constituent ids to group" do
     cons_group_id = "12"
     cons_ids = ["1", "2"]
-    post_params = { cons_group_id: cons_group_id, cons_ids: cons_ids }
+    post_params = { cons_group_id: cons_group_id, cons_ids: "1,2" }
     
     BlueStateDigital::Connection.should_receive(:perform_request).with('/cons_group/add_cons_ids_to_group', post_params, "POST")
     

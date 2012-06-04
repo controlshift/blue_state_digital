@@ -1,4 +1,5 @@
 require 'builder'
+require 'nokogiri'
 require_relative 'api_data_model'
 
 module BlueStateDigital
