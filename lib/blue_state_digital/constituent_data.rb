@@ -47,22 +47,20 @@ module BlueStateDigital
     private
     
     def build_constituent_group(group, cons)
-      cons.cons_group({ id: group.id })
+      cons.cons_group({ id: group })
     end
     
     def build_constituent_email(email, cons)
       cons.cons_email do |cons_email|
-        ConstituentEmail::ATTRIBUTES.each do |attr|
-          value = email.send(attr)
-          eval("cons_email.#{attr}('#{value}')") unless value.nil?
+        email.each do |key, value|
+          eval("cons_email.#{key}('#{value}')") unless value.nil?
         end
       end
     end
     
     def build_constituent_phone(phone, cons)
       cons.cons_phone do |cons_phone|
-        ConstituentPhone::ATTRIBUTES.each do |attr|
-          value = phone.send(attr)
+        phone.each do |key, value|
           eval("cons_phone.#{attr}('#{value}')") unless value.nil?
         end
       end
@@ -70,30 +68,10 @@ module BlueStateDigital
     
     def build_constituent_address(address, cons)
       cons.cons_addr do |cons_addr|
-        ConstituentAddress::ATTRIBUTES.each do |attr|
-          value = address.send(attr)
+        address.each do |key, value|
           eval("cons_addr.#{attr}('#{value}')") unless value.nil?
         end
       end
     end
-  end
-  
-  class ExternalId < ApiDataModel
-    attr_accessor :id, :type
-  end
-  
-  class ConstituentAddress < ApiDataModel
-    ATTRIBUTES = [:addr1, :addr2, :city, :state_cd, :zip, :zip_4, :country, :is_primary, :latitude, :longitude]
-    attr_accessor *ATTRIBUTES
-  end
-  
-  class ConstituentEmail < ApiDataModel
-    ATTRIBUTES = [:email, :email_type, :is_subscribed, :is_primary]
-    attr_accessor *ATTRIBUTES
-  end
-  
-  class ConstituentPhone < ApiDataModel
-    ATTRIBUTES = [:phone, :phone_type, :is_subscribed, :is_primary]
-    attr_accessor *ATTRIBUTES
   end
 end

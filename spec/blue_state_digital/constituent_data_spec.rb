@@ -10,8 +10,8 @@ describe BlueStateDigital::ConstituentData do
       lastname: 'Last', 
       is_banned: 0, 
       create_dt: timestamp,
-      emails: [BlueStateDigital::ConstituentEmail.new({ email: "email@email.com", email_type: "work", is_subscribed: 1, is_primary: 1 })],
-      groups: [BlueStateDigital::ConstituentGroup.new({ id: 3 }), BlueStateDigital::ConstituentGroup.new({ id: 5 })]
+      emails: [{ email: "email@email.com", email_type: "work", is_subscribed: 1, is_primary: 1 }],
+      groups: [3, 5]
     }
     
     xml_data = %q{<?xml version="1.0" encoding="utf-8"?>}
