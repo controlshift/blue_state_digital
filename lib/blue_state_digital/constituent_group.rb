@@ -6,6 +6,11 @@ module BlueStateDigital
   class ConstituentGroup < ApiDataModel
     attr_accessor :id, :name, :slug, :description, :group_type, :create_dt
     
+    def self.add_cons_ids_to_group(cons_group_id, cons_ids)
+      post_params = { cons_group_id: cons_group_id, cons_ids: cons_ids }
+      BlueStateDigital::Connection.perform_request '/cons_group/add_cons_ids_to_group', post_params, "POST"
+    end
+    
     def self.create(attrs = {})
       cons_group = ConstituentGroup.new(attrs)
       xml = BlueStateDigital::Connection.perform_request '/cons_group/add_constituent_groups', {}, "POST", cons_group.to_xml

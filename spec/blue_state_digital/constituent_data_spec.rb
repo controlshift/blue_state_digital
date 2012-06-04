@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe BlueStateDigital::ConstituentData do
-  it "#set" do
+  it "should set constituent data" do
     timestamp = Time.now.to_i
     
     data = { 
@@ -14,26 +14,33 @@ describe BlueStateDigital::ConstituentData do
       groups: [3, 5]
     }
     
-    xml_data = %q{<?xml version="1.0" encoding="utf-8"?>}
-    xml_data << "<api>"
-    xml_data << "<cons id=\"id\">"
-    xml_data << "<firstname>First</firstname>"
-    xml_data << "<lastname>Last</lastname>"
-    xml_data << "<is_banned>0</is_banned>"
-    xml_data << "<create_dt>#{timestamp}</create_dt>"
-    xml_data << "<cons_email>"
-    xml_data << "<email>email@email.com</email>"
-    xml_data << "<email_type>work</email_type>"
-    xml_data << "<is_subscribed>1</is_subscribed>"
-    xml_data << "<is_primary>1</is_primary>"
-    xml_data << "</cons_email>"
-    xml_data << "<cons_group id=\"3\"/>"
-    xml_data << "<cons_group id=\"5\"/>"
-    xml_data << "</cons>"
-    xml_data << "</api>"
+    input = %q{<?xml version="1.0" encoding="utf-8"?>}
+    input << "<api>"
+    input << "<cons id=\"id\">"
+    input << "<firstname>First</firstname>"
+    input << "<lastname>Last</lastname>"
+    input << "<is_banned>0</is_banned>"
+    input << "<create_dt>#{timestamp}</create_dt>"
+    input << "<cons_email>"
+    input << "<email>email@email.com</email>"
+    input << "<email_type>work</email_type>"
+    input << "<is_subscribed>1</is_subscribed>"
+    input << "<is_primary>1</is_primary>"
+    input << "</cons_email>"
+    input << "<cons_group id=\"3\"/>"
+    input << "<cons_group id=\"5\"/>"
+    input << "</cons>"
+    input << "</api>"
     
-    BlueStateDigital::Connection.should_receive(:perform_request).with('/cons/set_constituent_data', {}, "POST", xml_data)
+    output = %q{<?xml version="1.0" encoding="utf-8"?>}
+    output << "<api>"
+    output << "<cons id='329'>"
+    output << "</cons>"
+    output << "</api>"
     
-    BlueStateDigital::ConstituentData.set(data)
+    BlueStateDigital::Connection.should_receive(:perform_request).with('/cons/set_constituent_data', {}, "POST", input) { output }
+    
+    cons_data = BlueStateDigital::ConstituentData.set(data)
+    cons_data.id.should == '329'
   end
 end

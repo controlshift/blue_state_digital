@@ -8,7 +8,10 @@ module BlueStateDigital
     
     def self.set(attrs = {})
       cons_data = ConstituentData.new(attrs)
-      BlueStateDigital::Connection.perform_request '/cons/set_constituent_data', {}, "POST", cons_data.to_xml
+      xml = BlueStateDigital::Connection.perform_request '/cons/set_constituent_data', {}, "POST", cons_data.to_xml
+      doc = Nokogiri::XML(xml)
+      cons_data.id = doc.xpath('//cons').first[:id]
+      cons_data
     end
     
     def to_xml
