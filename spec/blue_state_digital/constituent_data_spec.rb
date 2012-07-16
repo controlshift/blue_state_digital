@@ -34,7 +34,7 @@ describe BlueStateDigital::ConstituentData do
     
     output = %q{<?xml version="1.0" encoding="utf-8"?>}
     output << "<api>"
-    output << "<cons id='329'>"
+    output << "<cons is_new='1' id='329'>"
     output << "</cons>"
     output << "</api>"
     
@@ -42,5 +42,7 @@ describe BlueStateDigital::ConstituentData do
     
     cons_data = BlueStateDigital::ConstituentData.set(data)
     cons_data.id.should == '329'
+    cons_data.is_new.should == '1'
+    cons_data.is_new?.should be_true
   end
 end

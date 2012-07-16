@@ -5,14 +5,20 @@ require_relative 'api_data_model'
 module BlueStateDigital
   class ConstituentData < ApiDataModel
     attr_accessor :id, :firstname, :lastname, :is_banned, :create_dt, :ext_id, 
-                  :emails, :adresses, :phones, :groups
+                  :emails, :adresses, :phones, :groups, :is_new
     
     def self.set(attrs = {})
       cons_data = ConstituentData.new(attrs)
       xml = BlueStateDigital::Connection.perform_request '/cons/set_constituent_data', {}, "POST", cons_data.to_xml
       doc = Nokogiri::XML(xml)
-      cons_data.id = doc.xpath('//cons').first[:id]
+      record =  doc.xpath('//cons').first
+      cons_data.id = record[:id]
+      cons_data.is_new = record[:is_new]
       cons_data
+    end
+
+    def is_new?
+      is_new == "1"
     end
     
     def to_xml
