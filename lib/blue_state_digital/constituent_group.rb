@@ -14,10 +14,22 @@ module BlueStateDigital
     
     def self.create(attrs = {})
       cons_group = ConstituentGroup.new(attrs)
-      xml = BlueStateDigital::Connection.perform_request '/cons_group/add_constituent_groups', {}, "POST", cons_group.to_xml
-      doc = Nokogiri::XML(xml)
-      cons_group.id = doc.xpath('//cons_group').first[:id]
+      group = cons_group.get_constituent_group_by
+
+      if group.empty?
+        xml = BlueStateDigital::Connection.perform_request '/cons_group/add_constituent_groups', {}, "POST", cons_group.to_xml
+        doc = Nokogiri::XML(xml)
+        group = doc.xpath('//cons_group')
+      end
+
+      cons_group.id = group.first[:id]
       cons_group
+    end
+
+    def get_constituent_group_by()
+      xml = BlueStateDigital::Connection.perform_request '/cons_group/get_constituent_group_by_name', {name: @name}, "GET"
+      doc = Nokogiri::XML(xml)
+      doc.xpath('//cons_group')
     end
     
     def to_xml
