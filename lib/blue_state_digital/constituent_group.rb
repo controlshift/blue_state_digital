@@ -7,7 +7,7 @@ require_relative 'api_data_model'
 module BlueStateDigital
   class ConstituentGroup < ApiDataModel
     FIELDS = [:id, :name, :slug, :description, :group_type, :create_dt]
-    attr_accessor FIELDS
+    attr_accessor *FIELDS
     
     def self.add_cons_ids_to_group(cons_group_id, cons_ids)
       cons_ids_concat = cons_ids.is_a?(Array) ? cons_ids.join(',') : cons_ids
