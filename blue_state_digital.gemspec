@@ -21,6 +21,8 @@ Gem::Specification.new do |s|
   s.add_development_dependency "rspec"
   s.add_development_dependency "webmock"
   s.add_development_dependency "timecop"
+  s.add_development_dependency "guard"
+  s.add_development_dependency "guard-rspec"
   s.add_dependency "rest-client"
   s.add_dependency "builder"
   s.add_dependency "nokogiri"
