@@ -40,7 +40,7 @@ xml_string
       attrs = { name: "Environment", slug: "environment", description: "Environment Group", group_type: "manual", create_dt: @timestamp }
 
 
-      BlueStateDigital::Connection.should_receive(:perform_request).with('/cons_group/get_constituent_group_by_name', {name:attrs[:name]}, "GET") { @empty_response }
+      BlueStateDigital::Connection.should_receive(:perform_request).with('/cons_group/get_constituent_group_by_slug', {slug:attrs[:slug]}, "GET") { @empty_response }
       BlueStateDigital::Connection.should_receive(:perform_request).with('/cons_group/add_constituent_groups', {}, "POST", @new_group_xml) { @exists_response }
 
       cons_group = BlueStateDigital::ConstituentGroup.find_or_create(attrs)
@@ -51,7 +51,7 @@ xml_string
     it "should not create group if it already exists" do
       attrs = { name: "Environment", slug: "environment", description: "Environment Group", group_type: "manual", create_dt: @timestamp }
 
-      BlueStateDigital::Connection.should_receive(:perform_request).with('/cons_group/get_constituent_group_by_name', {name:attrs[:name]}, "GET") { @exists_response }
+      BlueStateDigital::Connection.should_receive(:perform_request).with('/cons_group/get_constituent_group_by_slug', {slug:attrs[:slug]}, "GET") { @exists_response }
       BlueStateDigital::Connection.should_not_receive(:perform_request).with('/cons_group/add_constituent_groups', {}, "POST", @new_group_xml)
 
       cons_group = BlueStateDigital::ConstituentGroup.find_or_create(attrs)

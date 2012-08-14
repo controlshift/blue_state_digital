@@ -28,7 +28,7 @@ module BlueStateDigital
     end
 
     def self.find_or_create(attr = {})
-      group = get_constituent_group_by_name(attr[:name])
+      group = get_constituent_group_by_slug(attr[:slug])
       if group
         return group
       else
@@ -38,6 +38,10 @@ module BlueStateDigital
 
     def self.get_constituent_group_by_name( name )
       from_response( BlueStateDigital::Connection.perform_request '/cons_group/get_constituent_group_by_name', {name: name}, "GET" )
+    end
+
+    def self.get_constituent_group_by_slug( slug )
+      from_response( BlueStateDigital::Connection.perform_request '/cons_group/get_constituent_group_by_slug', {slug: slug}, "GET" )
     end
     
     def to_xml
