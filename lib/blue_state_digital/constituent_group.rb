@@ -37,10 +37,12 @@ module BlueStateDigital
     end
 
     def self.get_constituent_group_by_name( name )
+      name = name.slice(0..254)
       from_response( BlueStateDigital::Connection.perform_request '/cons_group/get_constituent_group_by_name', {name: name}, "GET" )
     end
 
     def self.get_constituent_group_by_slug( slug )
+      slug = slug.slice(0..31)
       from_response( BlueStateDigital::Connection.perform_request '/cons_group/get_constituent_group_by_slug', {slug: slug}, "GET" )
     end
     
