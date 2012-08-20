@@ -36,6 +36,11 @@ module BlueStateDigital
       end
     end
 
+    def self.delete_constituent_groups(group_ids)
+      group_ids_concat = group_ids.is_a?(Array) ? group_ids.join(',') : group_ids.to_s
+      BlueStateDigital::Connection.perform_request '/cons_group/delete_constituent_groups', {cons_group_ids: group_ids_concat}, "POST"
+    end
+
     def self.get_constituent_group_by_name( name )
       name = name.slice(0..254)
       from_response( BlueStateDigital::Connection.perform_request '/cons_group/get_constituent_group_by_name', {name: name}, "GET" )

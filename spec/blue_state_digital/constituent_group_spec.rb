@@ -1,6 +1,18 @@
 require 'spec_helper'
 
 describe BlueStateDigital::ConstituentGroup do
+  describe ".delete_constituent_groups" do
+    it "should handle an array of integers" do
+      BlueStateDigital::Connection.should_receive(:perform_request).with('/cons_group/delete_constituent_groups', {:cons_group_ids=>"2,3"}, "POST")
+      BlueStateDigital::ConstituentGroup.delete_constituent_groups([2,3])
+    end
+
+    it "should handle a single integer" do
+      BlueStateDigital::Connection.should_receive(:perform_request).with('/cons_group/delete_constituent_groups', {:cons_group_ids=>"2"}, "POST")
+      BlueStateDigital::ConstituentGroup.delete_constituent_groups(2)
+    end
+  end
+
   describe ".find_or_create" do
     before(:all) do
       @timestamp = Time.now.to_i
