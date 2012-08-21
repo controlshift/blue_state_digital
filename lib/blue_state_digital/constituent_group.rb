@@ -35,6 +35,10 @@ module BlueStateDigital
         return create(attr)
       end
     end
+    
+    def self.list_constituent_groups
+      from_response(BlueStateDigital::Connection.perform_request '/cons_group/list_constituent_groups', {}, "GET")
+    end 
 
     def self.delete_constituent_groups(group_ids)
       group_ids_concat = group_ids.is_a?(Array) ? group_ids.join(',') : group_ids.to_s
@@ -68,19 +72,26 @@ module BlueStateDigital
     private
 
     def self.from_response(string)
-      result = Crack::XML.parse(string)
-      if result["api"].present?
-        from_hash(result["api"])
+      parsed_result = Crack::XML.parse(string)
+      if parsed_result["api"].present?
+        if parsed_result["api"]["cons_group"].is_a?(Array)
+          results = []
+          parsed_result["api"]["cons_group"].each do |cons_group|
+            results << from_hash(cons_group)
+          end
+          return results
+        else
+          return from_hash(parsed_result["api"]["cons_group"])
+        end
       else
         nil
       end
     end
 
     def self.from_hash(hash)
-      group_hash = hash["cons_group"]
       attrs  = {}
       FIELDS.each do | field |
-        attrs[field] = group_hash[field.to_s] if group_hash[field.to_s].present?
+        attrs[field] = hash[field.to_s] if hash[field.to_s].present?
       end
       ConstituentGroup.new(attrs)
     end

@@ -1,6 +1,48 @@
 require 'spec_helper'
 
 describe BlueStateDigital::ConstituentGroup do
+  describe ".list_constituent_groups" do
+    before(:each) do
+      @response = <<-xml_string
+  <?xml version="1.0" encoding="utf-8"?>
+  <api>
+  <cons_group id='12' modified_dt="1171861200">
+      <name>First Quarter Donors</name>
+      <slug>q1donors</slug>
+      <description>People who donated in Q1 2007</description>
+      <is_banned>0</is_banned>
+      <create_dt>1168146000</create_dt>
+      <group_type>manual</group_type>
+      <members>162</members>
+      <unique_emails>164</unique_emails>
+      <unique_emails_subscribed>109</unique_emails_subscribed>
+      <count_dt>1213861583</count_dt>
+  </cons_group>
+  <cons_group id='13' modified_dt="1171861200">
+      <name>Second Quarter Donors</name>
+      <slug>q2donors</slug>
+      <description>People who donated in Q1 2007</description>
+      <is_banned>0</is_banned>
+      <create_dt>1168146000</create_dt>
+      <group_type>manual</group_type>
+      <members>162</members>
+      <unique_emails>164</unique_emails>
+      <unique_emails_subscribed>109</unique_emails_subscribed>
+      <count_dt>1213861583</count_dt>
+  </cons_group>
+  </api>
+  xml_string
+    end
+
+    it "should return a list of groups" do
+      BlueStateDigital::Connection.should_receive(:perform_request).with('/cons_group/list_constituent_groups', {}, "GET").and_return(@response)
+      groups = BlueStateDigital::ConstituentGroup.list_constituent_groups
+      groups.should be_a(Array)
+      groups.length.should == 2
+    end
+
+  end
+
   describe ".delete_constituent_groups" do
     it "should handle an array of integers" do
       BlueStateDigital::Connection.should_receive(:perform_request).with('/cons_group/delete_constituent_groups', {:cons_group_ids=>"2,3"}, "POST")
@@ -72,30 +114,74 @@ xml_string
   end
 
   describe ".from_response" do
-    before(:each) do
-      @response = <<-xml_string
-  <?xml version="1.0" encoding="utf-8"?>
-  <api>
-  <cons_group id='12' modified_dt="1171861200">
-      <name>First Quarter Donors</name>
-      <slug>q1donors</slug>
-      <description>People who donated in Q1 2007</description>
-      <is_banned>0</is_banned>
-      <create_dt>1168146000</create_dt>
-      <group_type>manual</group_type>
-      <members>162</members>
-      <unique_emails>164</unique_emails>
-      <unique_emails_subscribed>109</unique_emails_subscribed>
-      <count_dt>1213861583</count_dt>
-  </cons_group>
-  </api>
-  xml_string
-    end
+    describe "a single group" do
+      before(:each) do
+        @response = <<-xml_string
+    <?xml version="1.0" encoding="utf-8"?>
+    <api>
+    <cons_group id='12' modified_dt="1171861200">
+        <name>First Quarter Donors</name>
+        <slug>q1donors</slug>
+        <description>People who donated in Q1 2007</description>
+        <is_banned>0</is_banned>
+        <create_dt>1168146000</create_dt>
+        <group_type>manual</group_type>
+        <members>162</members>
+        <unique_emails>164</unique_emails>
+        <unique_emails_subscribed>109</unique_emails_subscribed>
+        <count_dt>1213861583</count_dt>
+    </cons_group>
+    </api>
+    xml_string
+      end
 
-    it "should create a group from an xml string" do
-      response = BlueStateDigital::ConstituentGroup.send(:from_response, @response)
-      response.id.should == "12"
-      response.slug.should == 'q1donors'
+      it "should create a group from an xml string" do
+        response = BlueStateDigital::ConstituentGroup.send(:from_response, @response)
+        response.id.should == "12"
+        response.slug.should == 'q1donors'
+      end
+    end
+    
+    describe "multiple groups" do
+      before(:each) do
+        @response = <<-xml_string
+    <?xml version="1.0" encoding="utf-8"?>
+    <api>
+    <cons_group id='12' modified_dt="1171861200">
+        <name>First Quarter Donors</name>
+        <slug>q1donors</slug>
+        <description>People who donated in Q1 2007</description>
+        <is_banned>0</is_banned>
+        <create_dt>1168146000</create_dt>
+        <group_type>manual</group_type>
+        <members>162</members>
+        <unique_emails>164</unique_emails>
+        <unique_emails_subscribed>109</unique_emails_subscribed>
+        <count_dt>1213861583</count_dt>
+    </cons_group>
+    <cons_group id='13' modified_dt="1171861200">
+        <name>Second Quarter Donors</name>
+        <slug>q2donors</slug>
+        <description>People who donated in Q1 2007</description>
+        <is_banned>0</is_banned>
+        <create_dt>1168146000</create_dt>
+        <group_type>manual</group_type>
+        <members>162</members>
+        <unique_emails>164</unique_emails>
+        <unique_emails_subscribed>109</unique_emails_subscribed>
+        <count_dt>1213861583</count_dt>
+    </cons_group>
+    </api>
+    xml_string
+      end
+
+      it "should create an array of groups from an xml string" do
+        response = BlueStateDigital::ConstituentGroup.send(:from_response, @response)
+        response.should be_a(Array)
+        first = response.first
+        first.id.should == "12"
+        first.slug.should == 'q1donors'
+      end
     end
   end
   
