@@ -38,7 +38,11 @@ module BlueStateDigital
     
     def self.list_constituent_groups
       from_response(BlueStateDigital::Connection.perform_request '/cons_group/list_constituent_groups', {}, "GET")
-    end 
+    end
+
+    def self.find_by_id(id)
+      list_constituent_groups.select{| group | group.id.to_s == id.to_s}.first
+    end
 
     def self.delete_constituent_groups(group_ids)
       group_ids_concat = group_ids.is_a?(Array) ? group_ids.join(',') : group_ids.to_s
