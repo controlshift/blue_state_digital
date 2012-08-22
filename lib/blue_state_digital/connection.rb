@@ -33,5 +33,16 @@ module BlueStateDigital
       extended_params[:api_mac] = compute_hmac(path, api_ts, extended_params)
       extended_params
     end
+
+    def self.get_deferred_results(deferred_id)
+      begin
+        return BlueStateDigital::Connection.perform_request '/get_deferred_results', {deferred_id: deferred_id}, "GET"
+      rescue RestClient::Exception => e
+        if e.http_code == 503
+          sleep 10
+          return nil
+        end
+      end
+    end
   end
 end

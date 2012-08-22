@@ -58,6 +58,16 @@ module BlueStateDigital
       slug = slug.slice(0..31)
       from_response( BlueStateDigital::Connection.perform_request '/cons_group/get_constituent_group_by_slug', {slug: slug}, "GET" )
     end
+
+    def self.get_cons_ids_for_group(cons_group_id)
+      deferred_id = BlueStateDigital::Connection.perform_request '/cons_group/get_cons_ids_for_group', {cons_group_id: cons_group_id}, "GET"
+
+      result = nil
+      while result.nil?
+        result = BlueStateDigital::Connection.get_deferred_results(deferred_id)
+      end
+      result.split("\n")
+    end
     
     def to_xml
       builder = Builder::XmlMarkup.new
