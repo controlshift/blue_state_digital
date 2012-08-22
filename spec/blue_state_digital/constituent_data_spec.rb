@@ -1,6 +1,18 @@
 require 'spec_helper'
 
 describe BlueStateDigital::ConstituentData do
+
+  describe "delete_constituents_by_id" do
+    it "should handle an array of integers" do
+      BlueStateDigital::Connection.should_receive(:perform_request).with('/cons/delete_constituents_by_id', {:cons_ids=>"2,3"}, "POST")
+      BlueStateDigital::ConstituentData.delete_constituents_by_id([2,3])
+    end
+
+    it "should handle a single integer" do
+      BlueStateDigital::Connection.should_receive(:perform_request).with('/cons/delete_constituents_by_id', {:cons_ids=>"2"}, "POST")
+      BlueStateDigital::ConstituentData.delete_constituents_by_id(2)
+    end
+  end
   it "should set constituent data" do
     timestamp = Time.now.to_i
     

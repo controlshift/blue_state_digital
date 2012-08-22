@@ -17,6 +17,11 @@ module BlueStateDigital
       cons_data
     end
 
+    def self.delete_constituents_by_id(cons_ids)
+      cons_ids_concat = cons_ids.is_a?(Array) ? cons_ids.join(',') : cons_ids.to_s
+      BlueStateDigital::Connection.perform_request '/cons/delete_constituents_by_id', {:cons_ids => cons_ids_concat}, "POST"
+    end
+
     def is_new?
       is_new == "1"
     end
