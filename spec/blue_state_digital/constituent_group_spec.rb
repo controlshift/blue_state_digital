@@ -194,7 +194,19 @@ xml_string
     cons_ids = ["1", "2"]
     post_params = { cons_group_id: cons_group_id, cons_ids: "1,2" }
     
-    BlueStateDigital::Connection.should_receive(:perform_request).with('/cons_group/add_cons_ids_to_group', post_params, "POST")
+    BlueStateDigital::Connection.should_receive(:perform_request).with('/cons_group/add_cons_ids_to_group', post_params, "POST").and_return("deferred_id")
+    BlueStateDigital::Connection.should_receive(:perform_request).with('/get_deferred_results', {deferred_id: "deferred_id"}, "GET").and_return(true)
+    
+    BlueStateDigital::ConstituentGroup.add_cons_ids_to_group(cons_group_id, cons_ids)
+  end
+  
+  it "should add a single constituent id to a group" do
+    cons_group_id = "12"
+    cons_ids = ["1"]
+    post_params = { cons_group_id: cons_group_id, cons_ids: "1" }
+    
+    BlueStateDigital::Connection.should_receive(:perform_request).with('/cons_group/add_cons_ids_to_group', post_params, "POST").and_return("deferred_id")
+    BlueStateDigital::Connection.should_receive(:perform_request).with('/get_deferred_results', {deferred_id: "deferred_id"}, "GET").and_return(true)
     
     BlueStateDigital::ConstituentGroup.add_cons_ids_to_group(cons_group_id, cons_ids)
   end

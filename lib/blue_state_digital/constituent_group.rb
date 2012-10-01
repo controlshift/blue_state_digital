@@ -11,9 +11,17 @@ module BlueStateDigital
     attr_accessor *FIELDS
     
     def self.add_cons_ids_to_group(cons_group_id, cons_ids)
-      cons_ids_concat = cons_ids.is_a?(Array) ? cons_ids.join(',') : cons_ids
-      post_params = { cons_group_id: cons_group_id, cons_ids: cons_ids_concat }
-      BlueStateDigital::Connection.perform_request '/cons_group/add_cons_ids_to_group', post_params, "POST"
+      cons_ids = cons_ids.is_a?(Array) ? cons_ids : [cons_ids]
+      cons_ids.in_groups_of(100) do
+        cons_ids_concat = cons_ids.join(',')
+        post_params = { cons_group_id: cons_group_id, cons_ids: cons_ids_concat }
+        deferred_id = BlueStateDigital::Connection.perform_request '/cons_group/add_cons_ids_to_group', post_params, "POST"
+        
+        result = nil
+        while result.nil?
+          result = BlueStateDigital::Connection.get_deferred_results(deferred_id)
+        end
+      end
     end
     
     def self.create(attrs = {})
