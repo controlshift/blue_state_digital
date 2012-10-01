@@ -214,8 +214,6 @@ xml_string
     BlueStateDigital::ConstituentGroup.should_receive(:delete_constituent_groups).with( old_cons_group_id )
     
     
-    
-    
     BlueStateDigital::ConstituentGroup.replace_constituent_group!(old_cons_group_id, attrs).should == new_group
   end
 end
