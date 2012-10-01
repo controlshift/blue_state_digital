@@ -50,7 +50,12 @@ module BlueStateDigital
 
     def self.delete_constituent_groups(group_ids)
       group_ids_concat = group_ids.is_a?(Array) ? group_ids.join(',') : group_ids.to_s
-      BlueStateDigital::Connection.perform_request '/cons_group/delete_constituent_groups', {cons_group_ids: group_ids_concat}, "POST"
+      deferred_id = BlueStateDigital::Connection.perform_request '/cons_group/delete_constituent_groups', {cons_group_ids: group_ids_concat}, "POST"
+      result = nil
+      while result.nil?
+        result = BlueStateDigital::Connection.get_deferred_results(deferred_id)
+      end
+      result
     end
 
     def self.get_constituent_group_by_name( name )
@@ -85,7 +90,7 @@ module BlueStateDigital
       while result.nil?
         result = BlueStateDigital::Connection.get_deferred_results(deferred_id)
       end
-      result.split("\n")
+      result
     end
     
     def to_xml

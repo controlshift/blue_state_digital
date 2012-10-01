@@ -85,12 +85,15 @@ xml_string
 
   describe ".delete_constituent_groups" do
     it "should handle an array of integers" do
-      BlueStateDigital::Connection.should_receive(:perform_request).with('/cons_group/delete_constituent_groups', {:cons_group_ids=>"2,3"}, "POST")
+      BlueStateDigital::Connection.should_receive(:perform_request).with('/cons_group/delete_constituent_groups', {:cons_group_ids=>"2,3"}, "POST").and_return("deferred_id")
+      BlueStateDigital::Connection.should_receive(:perform_request).with('/get_deferred_results', {deferred_id: "deferred_id"}, "GET").and_return(true)
       BlueStateDigital::ConstituentGroup.delete_constituent_groups([2,3])
     end
 
     it "should handle a single integer" do
-      BlueStateDigital::Connection.should_receive(:perform_request).with('/cons_group/delete_constituent_groups', {:cons_group_ids=>"2"}, "POST")
+      BlueStateDigital::Connection.should_receive(:perform_request).with('/cons_group/delete_constituent_groups', {:cons_group_ids=>"2"}, "POST").and_return("deferred_id")
+      BlueStateDigital::Connection.should_receive(:perform_request).with('/get_deferred_results', {deferred_id: "deferred_id"}, "GET").and_return(true)
+      
       BlueStateDigital::ConstituentGroup.delete_constituent_groups(2)
     end
   end
@@ -212,7 +215,6 @@ xml_string
     BlueStateDigital::ConstituentGroup.should_receive(:get_cons_ids_for_group).with(old_cons_group_id).and_return( [1, 2, 3] )
     BlueStateDigital::ConstituentGroup.should_receive(:add_cons_ids_to_group).with(new_cons_group_id, [1, 2, 3] )
     BlueStateDigital::ConstituentGroup.should_receive(:delete_constituent_groups).with( old_cons_group_id )
-    
     
     BlueStateDigital::ConstituentGroup.replace_constituent_group!(old_cons_group_id, attrs).should == new_group
   end
