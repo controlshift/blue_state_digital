@@ -72,7 +72,7 @@ module BlueStateDigital
       cons_ids  = get_cons_ids_for_group(old_group_id)
       delete_constituent_groups(old_group_id)
       
-      new_group = create(new_group_attrs)   
+      new_group = find_or_create(new_group_attrs)   
       add_cons_ids_to_group(new_group.id, cons_ids)
       
       new_group

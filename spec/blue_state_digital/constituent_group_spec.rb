@@ -208,7 +208,7 @@ xml_string
     
     
     BlueStateDigital::ConstituentGroup.should_receive(:get_constituent_group).with(old_cons_group_id).and_return( old_group )
-    BlueStateDigital::ConstituentGroup.should_receive(:create).with(attrs).and_return( new_group )
+    BlueStateDigital::ConstituentGroup.should_receive(:find_or_create).with(attrs).and_return( new_group )
     BlueStateDigital::ConstituentGroup.should_receive(:get_cons_ids_for_group).with(old_cons_group_id).and_return( [1, 2, 3] )
     BlueStateDigital::ConstituentGroup.should_receive(:add_cons_ids_to_group).with(new_cons_group_id, [1, 2, 3] )
     BlueStateDigital::ConstituentGroup.should_receive(:delete_constituent_groups).with( old_cons_group_id )
