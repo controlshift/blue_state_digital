@@ -39,9 +39,13 @@ module BlueStateDigital
     def self.list_constituent_groups
       from_response(BlueStateDigital::Connection.perform_request '/cons_group/list_constituent_groups', {}, "GET")
     end
+    
+    def self.get_constituent_group(id)
+      from_response(BlueStateDigital::Connection.perform_request '/cons_group/get_constituent_group', {cons_group_id: id}, "GET")
+    end
 
     def self.find_by_id(id)
-      list_constituent_groups.select{| group | group.id.to_s == id.to_s}.first
+      get_constituent_group(id)
     end
 
     def self.delete_constituent_groups(group_ids)
@@ -57,6 +61,19 @@ module BlueStateDigital
     def self.get_constituent_group_by_slug( slug )
       slug = slug.slice(0..31)
       from_response( BlueStateDigital::Connection.perform_request '/cons_group/get_constituent_group_by_slug', {slug: slug}, "GET" )
+    end
+    
+    # Warning: this is an expensive, potentially dangerous operation!
+    def self.replace_constituent_group!(old_group_id, new_group_attrs)
+      # first, check to see if this group exists.
+      group = get_constituent_group(old_group_id)
+      raise "Group being renamed does not exist!" if group.nil?
+      
+      new_group = create(new_group_attrs)   
+      cons_ids  = get_cons_ids_for_group(old_group_id)
+      add_cons_ids_to_group(new_group.id, cons_ids)
+      delete_constituent_groups(old_group_id)
+      new_group
     end
 
     def self.get_cons_ids_for_group(cons_group_id)
