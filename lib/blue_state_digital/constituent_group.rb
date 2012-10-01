@@ -69,10 +69,12 @@ module BlueStateDigital
       group = get_constituent_group(old_group_id)
       raise "Group being renamed does not exist!" if group.nil?
       
-      new_group = create(new_group_attrs)   
       cons_ids  = get_cons_ids_for_group(old_group_id)
-      add_cons_ids_to_group(new_group.id, cons_ids)
       delete_constituent_groups(old_group_id)
+      
+      new_group = create(new_group_attrs)   
+      add_cons_ids_to_group(new_group.id, cons_ids)
+      
       new_group
     end
 
