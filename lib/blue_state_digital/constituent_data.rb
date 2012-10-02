@@ -9,6 +9,12 @@ module BlueStateDigital
     FIELDS = [:id, :firstname, :lastname, :is_banned, :create_dt, :ext_id, 
                   :emails, :adresses, :phones, :groups, :is_new]
     attr_accessor *FIELDS
+    attr_accessor :group_ids
+    
+    def initialize(attrs = {})
+      super(attrs)
+      self.group_ids = []
+    end
     
     def self.set(attrs = {})
       cons_data = ConstituentData.new(attrs)
@@ -25,7 +31,7 @@ module BlueStateDigital
     end
 
     def self.get_constituents(filter)  
-      deferred_id = BlueStateDigital::Connection.perform_request('/cons/get_constituents', {:filter => filter}, "GET")
+      deferred_id = BlueStateDigital::Connection.perform_request('/cons/get_constituents', {:filter => filter, :bundles=> 'cons_group'}, "GET")
 
       result = nil
       while result.nil?
@@ -100,7 +106,15 @@ module BlueStateDigital
       FIELDS.each do | field |
         attrs[field] = hash[field.to_s] if hash[field.to_s].present?
       end
-      ConstituentData.new(attrs)
+      cons = ConstituentData.new(attrs)
+      if hash['cons_group'].present?
+        if hash['cons_group'].is_a?(Array)
+          cons.group_ids = hash['cons_group'].collect{|g| g["id"]}
+        else
+          cons.group_ids << hash['cons_group']["id"]
+        end
+      end
+      cons
     end
     
     def build_constituent_group(group, cons)

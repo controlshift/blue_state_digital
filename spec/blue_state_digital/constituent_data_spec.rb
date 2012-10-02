@@ -22,6 +22,39 @@ describe BlueStateDigital::ConstituentData do
       </api>
       xml_string
       
+      @constituent_with_group = <<-xml_string
+      <?xml version="1.0" encoding="utf-8"?>
+      <api>
+      <cons id="4382" modified_dt="1171861200">
+          <guid>ygdFPkyEdomzBhWEFZGREys</guid>
+          <firstname>Bob</firstname>
+          <lastname>Smith</lastname>
+          <has_account>1</has_account>
+          <is_banned>0</is_banned>
+          <create_dt>1168146000</create_dt>
+
+          <cons_group id="41" modified_dt="1163196031" />
+      </cons>
+      </api>
+      xml_string
+      
+      @constituent_with_groups = <<-xml_string
+      <?xml version="1.0" encoding="utf-8"?>
+      <api>
+      <cons id="4382" modified_dt="1171861200">
+          <guid>ygdFPkyEdomzBhWEFZGREys</guid>
+          <firstname>Bob</firstname>
+          <lastname>Smith</lastname>
+          <has_account>1</has_account>
+          <is_banned>0</is_banned>
+          <create_dt>1168146000</create_dt>
+
+          <cons_group id="17"  modified_dt="1168146011"/>
+          <cons_group id="41" modified_dt="1163196031" />
+      </cons>
+      </api>
+      xml_string
+      
       @multiple_constituents = <<-xml_string
       <?xml version="1.0" encoding="utf-8"?>
       <api>
@@ -55,7 +88,7 @@ describe BlueStateDigital::ConstituentData do
     end
     describe ".get_constituents_by_email" do
       it "should make a filtered constituents query" do
-        BlueStateDigital::Connection.should_receive(:perform_request).with('/cons/get_constituents', {:filter=>"email=george@washington.com"}, "GET").and_return("deferred_id")
+        BlueStateDigital::Connection.should_receive(:perform_request).with('/cons/get_constituents', {:filter=>"email=george@washington.com", :bundles => 'cons_group'}, "GET").and_return("deferred_id")
         BlueStateDigital::Connection.should_receive(:perform_request).with('/get_deferred_results', {deferred_id: "deferred_id"}, "GET").and_return(@single_constituent)
         response = BlueStateDigital::ConstituentData.get_constituents_by_email("george@washington.com")
         response.id.should == "4382"
@@ -76,6 +109,18 @@ describe BlueStateDigital::ConstituentData do
         response = BlueStateDigital::ConstituentData.send(:from_response, @single_constituent)
         response.id.should == "4382"
         response.firstname.should == 'Bob'
+      end
+      
+      it "should handle constituent group membership" do
+        response = BlueStateDigital::ConstituentData.send(:from_response, @constituent_with_groups)
+        response.id.should == '4382'
+        response.group_ids.should == ["17", "41"]
+      end
+      
+      it "should handle single constituent group membership" do
+        response = BlueStateDigital::ConstituentData.send(:from_response, @constituent_with_group)
+        response.id.should == '4382'
+        response.group_ids.should == ["41"]
       end
     end
   end
