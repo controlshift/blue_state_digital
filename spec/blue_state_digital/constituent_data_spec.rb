@@ -2,6 +2,84 @@ require 'spec_helper'
 
 describe BlueStateDigital::ConstituentData do
 
+  describe "Get Constituents" do
+    before(:each) do
+      @single_constituent = <<-xml_string
+      <?xml version="1.0" encoding="utf-8"?>
+      <api>
+      <cons id="4382" modified_dt="1171861200">
+          <guid>ygdFPkyEdomzBhWEFZGREys</guid>
+          <firstname>Bob</firstname>
+          <middlename>Reginald</middlename>
+          <lastname>Smith</lastname>
+          <has_account>1</has_account>
+          <is_banned>0</is_banned>
+          <create_dt>1168146000</create_dt>
+          <suffix>III</suffix>
+          <prefix>Mr</prefix>
+          <gender>M</gender>
+      </cons>
+      </api>
+      xml_string
+      
+      @multiple_constituents = <<-xml_string
+      <?xml version="1.0" encoding="utf-8"?>
+      <api>
+      <cons id="4382" modified_dt="1171861200">
+          <guid>ygdFPkyEdomzBhWEFZGREys</guid>
+          <firstname>Bob</firstname>
+          <middlename>Reginald</middlename>
+          <lastname>Smith</lastname>
+          <has_account>1</has_account>
+          <is_banned>0</is_banned>
+          <create_dt>1168146000</create_dt>
+          <suffix>III</suffix>
+          <prefix>Mr</prefix>
+          <gender>M</gender>
+      </cons>
+      
+      <cons id="4381" modified_dt="1171861200">
+          <guid>ygdFPkyEdomzBhWEFZGREys</guid>
+          <firstname>Susan</firstname>
+          <middlename>Reginald</middlename>
+          <lastname>Smith</lastname>
+          <has_account>1</has_account>
+          <is_banned>0</is_banned>
+          <create_dt>1168146000</create_dt>
+          <suffix></suffix>
+          <prefix>Mrs</prefix>
+          <gender>F</gender>
+      </cons>
+      </api>
+      xml_string
+    end
+    describe ".get_constituents_by_email" do
+      it "should make a filtered constituents query" do
+        BlueStateDigital::Connection.should_receive(:perform_request).with('/cons/get_constituents', {:filter=>"email=george@washington.com"}, "GET").and_return("deferred_id")
+        BlueStateDigital::Connection.should_receive(:perform_request).with('/get_deferred_results', {deferred_id: "deferred_id"}, "GET").and_return(@single_constituent)
+        response = BlueStateDigital::ConstituentData.get_constituents_by_email("george@washington.com")
+        response.id.should == "4382"
+        response.firstname.should == 'Bob'
+      end
+    end
+
+    describe ".from_response" do
+      it "should create an array of constituents from a response that contains multiple constituents" do
+        response = BlueStateDigital::ConstituentData.send(:from_response, @multiple_constituents)
+        response.should be_a(Array)
+        first = response.first
+        first.id.should == "4382"
+        first.firstname.should == 'Bob'
+      end
+
+      it "should create a single constituent when only one is supplied" do
+        response = BlueStateDigital::ConstituentData.send(:from_response, @single_constituent)
+        response.id.should == "4382"
+        response.firstname.should == 'Bob'
+      end
+    end
+  end
+  
   describe "delete_constituents_by_id" do
     it "should handle an array of integers" do
       BlueStateDigital::Connection.should_receive(:perform_request).with('/cons/delete_constituents_by_id', {:cons_ids=>"2,3"}, "POST")

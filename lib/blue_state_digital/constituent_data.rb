@@ -1,11 +1,14 @@
 require 'builder'
 require 'nokogiri'
+require 'active_support/core_ext'
+require 'crack/xml'
 require_relative 'api_data_model'
 
 module BlueStateDigital
   class ConstituentData < ApiDataModel
-    attr_accessor :id, :firstname, :lastname, :is_banned, :create_dt, :ext_id, 
-                  :emails, :adresses, :phones, :groups, :is_new
+    FIELDS = [:id, :firstname, :lastname, :is_banned, :create_dt, :ext_id, 
+                  :emails, :adresses, :phones, :groups, :is_new]
+    attr_accessor *FIELDS
     
     def self.set(attrs = {})
       cons_data = ConstituentData.new(attrs)
@@ -16,16 +19,30 @@ module BlueStateDigital
       cons_data.is_new = record[:is_new]
       cons_data
     end
+    
+    def self.get_constituents_by_email(email)
+      get_constituents("email=#{email}")
+    end
+
+    def self.get_constituents(filter)  
+      deferred_id = BlueStateDigital::Connection.perform_request('/cons/get_constituents', {:filter => filter}, "GET")
+
+      result = nil
+      while result.nil?
+        result = BlueStateDigital::Connection.get_deferred_results(deferred_id)
+      end
+      from_response(result)
+    end
 
     def self.delete_constituents_by_id(cons_ids)
       cons_ids_concat = cons_ids.is_a?(Array) ? cons_ids.join(',') : cons_ids.to_s
-      BlueStateDigital::Connection.perform_request '/cons/delete_constituents_by_id', {:cons_ids => cons_ids_concat}, "POST"
+      BlueStateDigital::Connection.perform_request('/cons/delete_constituents_by_id', {:cons_ids => cons_ids_concat}, "POST")
     end
 
     def is_new?
       is_new == "1"
     end
-    
+
     def to_xml
       builder = Builder::XmlMarkup.new
       builder.instruct! :xml, version: '1.0', encoding: 'utf-8'
@@ -60,6 +77,31 @@ module BlueStateDigital
     end
     
     private
+    
+    def self.from_response(string)
+      parsed_result = Crack::XML.parse(string)
+      if parsed_result["api"].present?
+        if parsed_result["api"]["cons"].is_a?(Array)
+          results = []
+          parsed_result["api"]["cons"].each do |cons_group|
+            results << from_hash(cons_group)
+          end
+          return results
+        else
+          return from_hash(parsed_result["api"]["cons"])
+        end
+      else
+        nil
+      end
+    end
+
+    def self.from_hash(hash)
+      attrs  = {}
+      FIELDS.each do | field |
+        attrs[field] = hash[field.to_s] if hash[field.to_s].present?
+      end
+      ConstituentData.new(attrs)
+    end
     
     def build_constituent_group(group, cons)
       cons.cons_group({ id: group })
