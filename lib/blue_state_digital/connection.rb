@@ -39,7 +39,7 @@ module BlueStateDigital
         return BlueStateDigital::Connection.perform_request '/get_deferred_results', {deferred_id: deferred_id}, "GET"
       rescue RestClient::Exception => e
         if e.http_code == 503
-          sleep 10
+          sleep 2
           return nil
         end
       end
