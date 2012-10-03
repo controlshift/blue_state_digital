@@ -96,6 +96,15 @@ describe BlueStateDigital::ConstituentData do
       end
     end
 
+    describe ".get_constituents_by_id" do
+      it "should return a constituent" do
+        BlueStateDigital::Connection.should_receive(:perform_request).with('/cons/get_constituents_by_id', {:cons_ids=>"23", :bundles => 'cons_group'}, "GET").and_return(@single_constituent)
+        response = BlueStateDigital::ConstituentData.get_constituents_by_id("23")
+        response.id.should == "4382"
+        response.firstname.should == 'Bob'
+      end
+    end
+
     describe ".from_response" do
       it "should create an array of constituents from a response that contains multiple constituents" do
         response = BlueStateDigital::ConstituentData.send(:from_response, @multiple_constituents)

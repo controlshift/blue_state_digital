@@ -30,6 +30,12 @@ module BlueStateDigital
       get_constituents("email=#{email}")
     end
 
+    def self.get_constituents_by_id(cons_ids)
+      cons_ids_concat = cons_ids.is_a?(Array) ? cons_ids.join(',') : cons_ids.to_s
+
+      from_response(BlueStateDigital::Connection.perform_request('/cons/get_constituents_by_id', {:cons_ids => cons_ids_concat, :bundles=> 'cons_group'}, "GET"))
+    end
+
     def self.get_constituents(filter)  
       deferred_id = BlueStateDigital::Connection.perform_request('/cons/get_constituents', {:filter => filter, :bundles=> 'cons_group'}, "GET")
 
