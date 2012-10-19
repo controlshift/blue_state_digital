@@ -5,7 +5,7 @@ require 'crack/xml'
 require_relative 'api_data_model'
 
 module BlueStateDigital
-  class ConstituentData < ApiDataModel
+  class Constituent < ApiDataModel
     FIELDS = [:id, :firstname, :lastname, :is_banned, :create_dt, :ext_id, 
                   :emails, :adresses, :phones, :groups, :is_new]
     attr_accessor *FIELDS
@@ -16,39 +16,13 @@ module BlueStateDigital
       self.group_ids = []
     end
     
-    def self.set(attrs = {})
-      cons_data = ConstituentData.new(attrs)
-      xml = BlueStateDigital::Connection.perform_request '/cons/set_constituent_data', {}, "POST", cons_data.to_xml
+    def save
+      xml = connection.perform_request '/cons/set_constituent_data', {}, "POST", self.to_xml
       doc = Nokogiri::XML(xml)
       record =  doc.xpath('//cons').first
-      cons_data.id = record[:id]
-      cons_data.is_new = record[:is_new]
-      cons_data
-    end
-    
-    def self.get_constituents_by_email(email)
-      get_constituents("email=#{email}")
-    end
-
-    def self.get_constituents_by_id(cons_ids)
-      cons_ids_concat = cons_ids.is_a?(Array) ? cons_ids.join(',') : cons_ids.to_s
-
-      from_response(BlueStateDigital::Connection.perform_request('/cons/get_constituents_by_id', {:cons_ids => cons_ids_concat, :bundles=> 'cons_group'}, "GET"))
-    end
-
-    def self.get_constituents(filter)  
-      deferred_id = BlueStateDigital::Connection.perform_request('/cons/get_constituents', {:filter => filter, :bundles=> 'cons_group'}, "GET")
-
-      result = nil
-      while result.nil?
-        result = BlueStateDigital::Connection.get_deferred_results(deferred_id)
-      end
-      from_response(result)
-    end
-
-    def self.delete_constituents_by_id(cons_ids)
-      cons_ids_concat = cons_ids.is_a?(Array) ? cons_ids.join(',') : cons_ids.to_s
-      BlueStateDigital::Connection.perform_request('/cons/delete_constituents_by_id', {:cons_ids => cons_ids_concat}, "POST")
+      self.id = record[:id]
+      self.is_new = record[:is_new]
+      self
     end
 
     def is_new?
@@ -90,39 +64,7 @@ module BlueStateDigital
     
     private
     
-    def self.from_response(string)
-      parsed_result = Crack::XML.parse(string)
-      if parsed_result["api"].present?
-        if parsed_result["api"]["cons"].is_a?(Array)
-          results = []
-          parsed_result["api"]["cons"].each do |cons_group|
-            results << from_hash(cons_group)
-          end
-          return results
-        else
-          return from_hash(parsed_result["api"]["cons"])
-        end
-      else
-        nil
-      end
-    end
 
-    def self.from_hash(hash)
-      attrs  = {}
-      FIELDS.each do | field |
-        attrs[field] = hash[field.to_s] if hash[field.to_s].present?
-      end
-      cons = ConstituentData.new(attrs)
-      if hash['cons_group'].present?
-        if hash['cons_group'].is_a?(Array)
-          cons.group_ids = hash['cons_group'].collect{|g| g["id"]}
-        else
-          cons.group_ids << hash['cons_group']["id"]
-        end
-      end
-      cons
-    end
-    
     def build_constituent_group(group, cons)
       cons.cons_group({ id: group })
     end
@@ -150,5 +92,67 @@ module BlueStateDigital
         end
       end
     end
+  end
+
+  class Constituents < CollectionResource
+    def get_constituents_by_email(email)
+      get_constituents("email=#{email}")
+    end
+
+    def get_constituents_by_id(cons_ids)
+      cons_ids_concat = cons_ids.is_a?(Array) ? cons_ids.join(',') : cons_ids.to_s
+
+      from_response(connection.perform_request('/cons/get_constituents_by_id', {:cons_ids => cons_ids_concat, :bundles=> 'cons_group'}, "GET"))
+    end
+
+    def get_constituents(filter)
+      deferred_id = connection.perform_request('/cons/get_constituents', {:filter => filter, :bundles=> 'cons_group'}, "GET")
+
+      result = nil
+      while result.nil?
+        result = connection.get_deferred_results(deferred_id)
+      end
+      from_response(result)
+    end
+
+    def delete_constituents_by_id(cons_ids)
+      cons_ids_concat = cons_ids.is_a?(Array) ? cons_ids.join(',') : cons_ids.to_s
+      connection.perform_request('/cons/delete_constituents_by_id', {:cons_ids => cons_ids_concat}, "POST")
+    end
+
+    def from_response(string)
+      parsed_result = Crack::XML.parse(string)
+      if parsed_result["api"].present?
+        if parsed_result["api"]["cons"].is_a?(Array)
+          results = []
+          parsed_result["api"]["cons"].each do |cons_group|
+            results << from_hash(cons_group)
+          end
+          return results
+        else
+          return from_hash(parsed_result["api"]["cons"])
+        end
+      else
+        nil
+      end
+    end
+
+    def from_hash(hash)
+      attrs  = {}
+      Constituent::FIELDS.each do | field |
+        attrs[field] = hash[field.to_s] if hash[field.to_s].present?
+      end
+      cons = Constituent.new(attrs)
+      if hash['cons_group'].present?
+        if hash['cons_group'].is_a?(Array)
+          cons.group_ids = hash['cons_group'].collect{|g| g["id"]}
+        else
+          cons.group_ids << hash['cons_group']["id"]
+        end
+      end
+      cons
+    end
+
+
   end
 end

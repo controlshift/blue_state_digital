@@ -1,6 +1,7 @@
 require 'spec_helper'
 
-describe BlueStateDigital::ConstituentData do
+describe BlueStateDigital::Constituent do
+  let(:connection) { BlueStateDigital::Connection.new({}) }
 
   describe "Get Constituents" do
     before(:each) do
@@ -86,11 +87,12 @@ describe BlueStateDigital::ConstituentData do
       </api>
       xml_string
     end
+
     describe ".get_constituents_by_email" do
       it "should make a filtered constituents query" do
-        BlueStateDigital::Connection.should_receive(:perform_request).with('/cons/get_constituents', {:filter=>"email=george@washington.com", :bundles => 'cons_group'}, "GET").and_return("deferred_id")
-        BlueStateDigital::Connection.should_receive(:perform_request).with('/get_deferred_results', {deferred_id: "deferred_id"}, "GET").and_return(@single_constituent)
-        response = BlueStateDigital::ConstituentData.get_constituents_by_email("george@washington.com")
+        connection.should_receive(:perform_request).with('/cons/get_constituents', {:filter=>"email=george@washington.com", :bundles => 'cons_group'}, "GET").and_return("deferred_id")
+        connection.should_receive(:perform_request).with('/get_deferred_results', {deferred_id: "deferred_id"}, "GET").and_return(@single_constituent)
+        response = connection.constituents.get_constituents_by_email("george@washington.com")
         response.id.should == "4382"
         response.firstname.should == 'Bob'
       end
@@ -98,8 +100,8 @@ describe BlueStateDigital::ConstituentData do
 
     describe ".get_constituents_by_id" do
       it "should return a constituent" do
-        BlueStateDigital::Connection.should_receive(:perform_request).with('/cons/get_constituents_by_id', {:cons_ids=>"23", :bundles => 'cons_group'}, "GET").and_return(@single_constituent)
-        response = BlueStateDigital::ConstituentData.get_constituents_by_id("23")
+        connection.should_receive(:perform_request).with('/cons/get_constituents_by_id', {:cons_ids=>"23", :bundles => 'cons_group'}, "GET").and_return(@single_constituent)
+        response = connection.constituents.get_constituents_by_id("23")
         response.id.should == "4382"
         response.firstname.should == 'Bob'
       end
@@ -107,7 +109,7 @@ describe BlueStateDigital::ConstituentData do
 
     describe ".from_response" do
       it "should create an array of constituents from a response that contains multiple constituents" do
-        response = BlueStateDigital::ConstituentData.send(:from_response, @multiple_constituents)
+        response = connection.constituents.send(:from_response, @multiple_constituents)
         response.should be_a(Array)
         first = response.first
         first.id.should == "4382"
@@ -115,19 +117,19 @@ describe BlueStateDigital::ConstituentData do
       end
 
       it "should create a single constituent when only one is supplied" do
-        response = BlueStateDigital::ConstituentData.send(:from_response, @single_constituent)
+        response = connection.constituents.send(:from_response, @single_constituent)
         response.id.should == "4382"
         response.firstname.should == 'Bob'
       end
       
       it "should handle constituent group membership" do
-        response = BlueStateDigital::ConstituentData.send(:from_response, @constituent_with_groups)
+        response = connection.constituents.send(:from_response, @constituent_with_groups)
         response.id.should == '4382'
         response.group_ids.should == ["17", "41"]
       end
       
       it "should handle single constituent group membership" do
-        response = BlueStateDigital::ConstituentData.send(:from_response, @constituent_with_group)
+        response = connection.constituents.send(:from_response, @constituent_with_group)
         response.id.should == '4382'
         response.group_ids.should == ["41"]
       end
@@ -136,13 +138,13 @@ describe BlueStateDigital::ConstituentData do
   
   describe "delete_constituents_by_id" do
     it "should handle an array of integers" do
-      BlueStateDigital::Connection.should_receive(:perform_request).with('/cons/delete_constituents_by_id', {:cons_ids=>"2,3"}, "POST")
-      BlueStateDigital::ConstituentData.delete_constituents_by_id([2,3])
+      connection.should_receive(:perform_request).with('/cons/delete_constituents_by_id', {:cons_ids=>"2,3"}, "POST")
+      connection.constituents.delete_constituents_by_id([2,3])
     end
 
     it "should handle a single integer" do
-      BlueStateDigital::Connection.should_receive(:perform_request).with('/cons/delete_constituents_by_id', {:cons_ids=>"2"}, "POST")
-      BlueStateDigital::ConstituentData.delete_constituents_by_id(2)
+      connection.should_receive(:perform_request).with('/cons/delete_constituents_by_id', {:cons_ids=>"2"}, "POST")
+      connection.constituents.delete_constituents_by_id(2)
     end
   end
   it "should set constituent data" do
@@ -155,7 +157,8 @@ describe BlueStateDigital::ConstituentData do
       is_banned: 0, 
       create_dt: timestamp,
       emails: [{ email: "email@email.com", email_type: "work", is_subscribed: 1, is_primary: 1 }],
-      groups: [3, 5]
+      groups: [3, 5],
+      connection: connection
     }
     
     input = %q{<?xml version="1.0" encoding="utf-8"?>}
@@ -182,9 +185,10 @@ describe BlueStateDigital::ConstituentData do
     output << "</cons>"
     output << "</api>"
     
-    BlueStateDigital::Connection.should_receive(:perform_request).with('/cons/set_constituent_data', {}, "POST", input) { output }
+    connection.should_receive(:perform_request).with('/cons/set_constituent_data', {}, "POST", input) { output }
     
-    cons_data = BlueStateDigital::ConstituentData.set(data)
+    cons_data = BlueStateDigital::Constituent.new(data)
+    cons_data.save
     cons_data.id.should == '329'
     cons_data.is_new.should == '1'
     cons_data.is_new?.should be_true
