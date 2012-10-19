@@ -1,9 +1,3 @@
-require 'builder'
-require 'nokogiri'
-require 'active_support/core_ext'
-require 'crack/xml'
-require_relative 'api_data_model'
-
 module BlueStateDigital
   class Constituent < ApiDataModel
     FIELDS = [:id, :firstname, :lastname, :is_banned, :create_dt, :ext_id, 

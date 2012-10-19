@@ -1,7 +1,3 @@
-require 'rubygems'
-require 'openssl'
-require 'rest_client'
-
 module BlueStateDigital
   class Connection
     API_VERSION = 1

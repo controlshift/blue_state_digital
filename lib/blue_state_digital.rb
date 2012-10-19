@@ -1,8 +1,18 @@
-require "blue_state_digital/version"
+require 'openssl'
+require 'rest_client'
+require 'builder'
+require 'nokogiri'
+require 'active_support/core_ext'
+require 'crack/xml'
+require 'builder'
+require 'nokogiri'
+require 'active_support/core_ext'
+require 'crack/xml'
+
+require "blue_state_digital/version" unless defined?(BlueStateDigital::VERSION)
+require "blue_state_digital/connection"
 require "blue_state_digital/collection_resource"
 require "blue_state_digital/api_data_model"
 require "blue_state_digital/address"
-
-module BlueStateDigital
-  # Your code goes here...
-end
+require "blue_state_digital/constituent"
+require "blue_state_digital/constituent_group"

@@ -1,6 +1,9 @@
 require 'rspec'
 require 'webmock/rspec'
-Dir[File.join(File.dirname(__FILE__), '../lib/blue_state_digital/*.rb')].each {|file| require file }
+
+$LOAD_PATH << File.join(File.dirname(__FILE__), '..', 'lib')
+
+require 'blue_state_digital'
 
 RSpec.configure do |config|
   
