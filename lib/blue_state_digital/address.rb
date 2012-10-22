@@ -8,8 +8,6 @@
 # <is_primary>1</is_primary>
 # <latitude>42.000</latitude>
 # <longitude>71.000</longitude>
-require_relative 'api_data_model'
-require 'pry'
 
 module BlueStateDigital
   class Address < ApiDataModel
