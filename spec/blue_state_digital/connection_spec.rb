@@ -43,6 +43,13 @@ describe BlueStateDigital::Connection do
       end
     end
   end
+
+  describe "#get_deferred_results" do
+    it "should make a request" do
+      connection.should_receive(:perform_request).and_return("foo")
+      connection.get_deferred_results("deferred_id").should == "foo"
+    end
+  end
   
   describe "#compute_hmac" do
     it "should compute proper hmac hash" do

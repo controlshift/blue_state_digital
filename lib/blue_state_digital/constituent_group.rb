@@ -24,12 +24,7 @@ module BlueStateDigital
       cons_ids.in_groups_of(100) do
         cons_ids_concat = cons_ids.join(',')
         post_params = { cons_group_id: cons_group_id, cons_ids: cons_ids_concat }
-        deferred_id = connection.perform_request '/cons_group/add_cons_ids_to_group', post_params, "POST"
-
-        result = nil
-        while result.nil?
-          result = connection.get_deferred_results(deferred_id)
-        end
+        connection.wait_for_deferred_result( connection.perform_request '/cons_group/add_cons_ids_to_group', post_params, "POST" )
       end
     end
 
@@ -67,12 +62,7 @@ module BlueStateDigital
 
     def delete_constituent_groups(group_ids)
       group_ids_concat = group_ids.is_a?(Array) ? group_ids.join(',') : group_ids.to_s
-      deferred_id = connection.perform_request '/cons_group/delete_constituent_groups', {cons_group_ids: group_ids_concat}, "POST"
-      result = nil
-      while result.nil?
-        result = connection.get_deferred_results(deferred_id)
-      end
-      result
+      connection.wait_for_deferred_result( connection.perform_request( '/cons_group/delete_constituent_groups', {cons_group_ids: group_ids_concat}, "POST")  )
     end
 
     def get_constituent_group_by_name( name )
@@ -101,13 +91,8 @@ module BlueStateDigital
     end
 
     def get_cons_ids_for_group(cons_group_id)
-      deferred_id = connection.perform_request '/cons_group/get_cons_ids_for_group', {cons_group_id: cons_group_id}, "GET"
-
-      result = nil
-      while result.nil?
-        result = connection.get_deferred_results(deferred_id)
-      end
-      result
+      response = connection.wait_for_deferred_result( connection.perform_request '/cons_group/get_cons_ids_for_group', {cons_group_id: cons_group_id}, "GET" )
+      response.split("\n")
     end
 
 

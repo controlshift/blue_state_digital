@@ -36,17 +36,30 @@ module BlueStateDigital
     def set_up_resources # :doc:
        @constituents = BlueStateDigital::Constituents.new(self)
        @constituent_groups = BlueStateDigital::ConstituentGroups.new(self)
-     end
+    end
 
     def get_deferred_results(deferred_id)
+      perform_request '/get_deferred_results', {deferred_id: deferred_id}, "GET"
+    end
+
+    def retrieve_results(deferred_id)
       begin
-        return perform_request '/get_deferred_results', {deferred_id: deferred_id}, "GET"
+        return get_deferred_results(deferred_id)
       rescue RestClient::Exception => e
         if e.http_code == 503
-          sleep 2
           return nil
         end
       end
     end
+
+    def wait_for_deferred_result(deferred_id)
+      result = nil
+      while result.nil?
+        result = retrieve_results(deferred_id)
+        sleep(2) if result.nil?
+      end
+      result
+    end
+
   end
 end
