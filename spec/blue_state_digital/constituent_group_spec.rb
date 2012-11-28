@@ -201,6 +201,17 @@ xml_string
     
     connection.constituent_groups.add_cons_ids_to_group(cons_group_id, cons_ids)
   end
+
+  it "should not wait for the result if told not to" do
+    cons_group_id = "12"
+    cons_ids = ["1", "2"]
+    post_params = { cons_group_id: cons_group_id, cons_ids: "1,2" }
+
+    connection.should_receive(:perform_request).with('/cons_group/add_cons_ids_to_group', post_params, "POST").and_return("deferred_id")
+    connection.should_not_receive(:perform_request).with('/get_deferred_results', {deferred_id: "deferred_id"}, "GET").and_return(true)
+
+    connection.constituent_groups.add_cons_ids_to_group(cons_group_id, cons_ids,  {wait_for_result: false})
+  end
   
   it "should add a single constituent id to a group" do
     cons_group_id = "12"

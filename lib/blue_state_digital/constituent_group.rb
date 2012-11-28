@@ -19,12 +19,16 @@ module BlueStateDigital
   end
 
   class ConstituentGroups < CollectionResource
-    def add_cons_ids_to_group(cons_group_id, cons_ids)
+    def add_cons_ids_to_group(cons_group_id, cons_ids, options = {wait_for_result: true})
       cons_ids = cons_ids.is_a?(Array) ? cons_ids : [cons_ids]
       cons_ids.in_groups_of(100) do
         cons_ids_concat = cons_ids.join(',')
         post_params = { cons_group_id: cons_group_id, cons_ids: cons_ids_concat }
-        connection.wait_for_deferred_result( connection.perform_request '/cons_group/add_cons_ids_to_group', post_params, "POST" )
+        if options[:wait_for_result]
+          connection.wait_for_deferred_result( connection.perform_request '/cons_group/add_cons_ids_to_group', post_params, "POST" )
+        else
+          connection.perform_request '/cons_group/add_cons_ids_to_group', post_params, "POST"
+        end
       end
     end
 
