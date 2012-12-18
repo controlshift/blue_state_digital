@@ -1,15 +1,15 @@
 module BlueStateDigital
   class Constituent < ApiDataModel
-    FIELDS = [:id, :firstname, :lastname, :is_banned, :create_dt, :ext_id, 
+    FIELDS = [:id, :firstname, :lastname, :is_banned, :create_dt, :ext_id,
                   :emails, :addresses, :phones, :groups, :is_new]
     attr_accessor *FIELDS
     attr_accessor :group_ids
-    
+
     def initialize(attrs = {})
       super(attrs)
       self.group_ids = []
     end
-    
+
     def save
       xml = connection.perform_request '/cons/set_constituent_data', {}, "POST", self.to_xml
       doc = Nokogiri::XML(xml)
@@ -33,13 +33,13 @@ module BlueStateDigital
           cons_attrs[:ext_id] =  self.ext_id.id    unless self.ext_id.id.blank?
           cons_attrs[:ext_type] = self.ext_id.type unless self.ext_id.type.blank?
         end
-        
+
         api.cons(cons_attrs) do |cons|
           cons.firstname(self.firstname) unless self.firstname.blank?
           cons.lastname(self.lastname)   unless self.lastname.blank?
           cons.is_banned(self.is_banned) unless self.is_banned.blank?
           cons.create_dt(self.create_dt) unless self.create_dt.blank?
-          
+
           unless self.emails.blank?
             self.emails.each {|email| build_constituent_email(email, cons) }
           end
@@ -55,14 +55,14 @@ module BlueStateDigital
         end
       end
     end
-    
+
     private
-    
+
 
     def build_constituent_group(group, cons)
       cons.cons_group({ id: group })
     end
-    
+
     def build_constituent_email(email, cons)
       cons.cons_email do |cons_email|
         email.each do |key, value|
@@ -70,7 +70,7 @@ module BlueStateDigital
         end
       end
     end
-    
+
     def build_constituent_phone(phone, cons)
       cons.cons_phone do |cons_phone|
         phone.each do |key, value|
@@ -78,7 +78,7 @@ module BlueStateDigital
         end
       end
     end
-    
+
     def build_constituent_address(address, cons)
       cons.cons_addr do |cons_addr|
         address.each do |key, value|
@@ -141,7 +141,7 @@ module BlueStateDigital
         end
       end
 
-      if hash['cons_addr'].present? 
+      if hash['cons_addr'].present?
         if hash['cons_addr'].is_a?(Array)
           cons.addresses = hash['cons_addr'].collect {|addr_hash| BlueStateDigital::Address.new addr_hash}
         else
@@ -149,7 +149,7 @@ module BlueStateDigital
         end
       end
 
-      if hash['cons_email'].present? 
+      if hash['cons_email'].present?
         if hash['cons_email'].is_a?(Array)
           cons.emails = hash['cons_email'].collect {|email_hash| BlueStateDigital::Email.new email_hash}
         else
@@ -157,7 +157,7 @@ module BlueStateDigital
         end
       end
 
-      if hash['cons_phone'].present? 
+      if hash['cons_phone'].present?
         if hash['cons_phone'].is_a?(Array)
           cons.phones = hash['cons_phone'].collect {|phone_hash| BlueStateDigital::Phone.new phone_hash}
         else
