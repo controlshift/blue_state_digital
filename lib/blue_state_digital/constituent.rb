@@ -89,8 +89,8 @@ module BlueStateDigital
   end
 
   class Constituents < CollectionResource
-    def get_constituents_by_email(email)
-      get_constituents("email=#{email}")
+    def get_constituents_by_email email, bundles='cons_group'
+      get_constituents "email=#{email}", bundles
     end
 
     def get_constituents_by_id(cons_ids)
@@ -99,8 +99,8 @@ module BlueStateDigital
       from_response(connection.perform_request('/cons/get_constituents_by_id', {:cons_ids => cons_ids_concat, :bundles=> 'cons_group'}, "GET"))
     end
 
-    def get_constituents(filter)
-      result = connection.wait_for_deferred_result( connection.perform_request('/cons/get_constituents', {:filter => filter, :bundles=> 'cons_group'}, "GET") )
+    def get_constituents(filter, bundles = 'cons_group')
+      result = connection.wait_for_deferred_result( connection.perform_request('/cons/get_constituents', {:filter => filter, :bundles=> bundles}, "GET") )
 
       from_response(result)
     end
@@ -140,9 +140,32 @@ module BlueStateDigital
           cons.group_ids << hash['cons_group']["id"]
         end
       end
+
+      if hash['cons_addr'].present? 
+        if hash['cons_addr'].is_a?(Array)
+          cons.addresses = hash['cons_addr'].collect {|addr_hash| BlueStateDigital::Address.new addr_hash}
+        else
+          cons.addresses = [BlueStateDigital::Address.new(hash['cons_addr'])]
+        end
+      end
+
+      if hash['cons_email'].present? 
+        if hash['cons_email'].is_a?(Array)
+          cons.emails = hash['cons_email'].collect {|email_hash| BlueStateDigital::Email.new email_hash}
+        else
+          cons.emails = [BlueStateDigital::Email.new(hash['cons_email'])]
+        end
+      end
+
+      if hash['cons_phone'].present? 
+        if hash['cons_phone'].is_a?(Array)
+          cons.phones = hash['cons_phone'].collect {|phone_hash| BlueStateDigital::Phone.new phone_hash}
+        else
+          cons.phones = [BlueStateDigital::Phone.new(hash['cons_phone'])]
+        end
+      end
+
       cons
     end
-
-
   end
 end

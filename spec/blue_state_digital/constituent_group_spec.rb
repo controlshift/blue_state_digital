@@ -208,7 +208,7 @@ xml_string
     post_params = { cons_group_id: cons_group_id, cons_ids: "1,2" }
 
     connection.should_receive(:perform_request).with('/cons_group/add_cons_ids_to_group', post_params, "POST").and_return("deferred_id")
-    connection.should_not_receive(:perform_request).with('/get_deferred_results', {deferred_id: "deferred_id"}, "GET").and_return(true)
+    connection.should_not_receive(:perform_request).with('/get_deferred_results', {deferred_id: "deferred_id"}, "GET")
 
     connection.constituent_groups.add_cons_ids_to_group(cons_group_id, cons_ids,  {wait_for_result: false})
   end

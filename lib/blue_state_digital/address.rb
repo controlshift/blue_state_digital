@@ -22,5 +22,6 @@ module BlueStateDigital
       end
       builder
     end
+
   end
 end
