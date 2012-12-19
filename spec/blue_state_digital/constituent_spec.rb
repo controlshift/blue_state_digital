@@ -168,7 +168,7 @@ describe BlueStateDigital::Constituent do
       it "should make a filtered constituents query" do
         connection.should_receive(:perform_request).with('/cons/get_constituents', {:filter=>"email=george@washington.com", :bundles => 'cons_group'}, "GET").and_return("deferred_id")
         connection.should_receive(:perform_request).with('/get_deferred_results', {deferred_id: "deferred_id"}, "GET").and_return(@single_constituent)
-        response = connection.constituents.get_constituents_by_email("george@washington.com")
+        response = connection.constituents.get_constituents_by_email("george@washington.com").first
         response.id.should == "4382"
         response.firstname.should == 'Bob'
       end
@@ -177,7 +177,7 @@ describe BlueStateDigital::Constituent do
         bundles = 'cons_addr'
         connection.should_receive(:perform_request).with('/cons/get_constituents', {:filter=>"email=george@washington.com", :bundles => bundles}, "GET").and_return("deferred_id")
         connection.should_receive(:perform_request).with('/get_deferred_results', {deferred_id: "deferred_id"}, "GET").and_return(@constituent_with_addr)
-        response = connection.constituents.get_constituents_by_email("george@washington.com", bundles)
+        response = connection.constituents.get_constituents_by_email("george@washington.com", bundles).first
         response.addresses[0].addr1 == "aaa1"
         response.addresses[0].addr2 == "aaa2"
       end
@@ -186,7 +186,7 @@ describe BlueStateDigital::Constituent do
     describe ".get_constituents_by_id" do
       it "should return a constituent" do
         connection.should_receive(:perform_request).with('/cons/get_constituents_by_id', {:cons_ids=>"23", :bundles => 'cons_group'}, "GET").and_return(@single_constituent)
-        response = connection.constituents.get_constituents_by_id("23")
+        response = connection.constituents.get_constituents_by_id("23").first
         response.id.should == "4382"
         response.firstname.should == 'Bob'
       end
@@ -201,26 +201,28 @@ describe BlueStateDigital::Constituent do
         first.firstname.should == 'Bob'
       end
 
-      it "should create a single constituent when only one is supplied" do
+      it "should create an array of single constituent when only one is supplied" do
         response = connection.constituents.send(:from_response, @single_constituent)
-        response.id.should == "4382"
-        response.firstname.should == 'Bob'
+        response.should be_a(Array)
+        response.size.should == 1
+        response.first.id.should == "4382"
+        response.first.firstname.should == 'Bob'
       end
 
       it "should handle constituent group membership" do
-        response = connection.constituents.send(:from_response, @constituent_with_groups)
+        response = connection.constituents.send(:from_response, @constituent_with_groups).first
         response.id.should == '4382'
         response.group_ids.should == ["17", "41"]
       end
 
       it "should handle single constituent group membership" do
-        response = connection.constituents.send(:from_response, @constituent_with_group)
+        response = connection.constituents.send(:from_response, @constituent_with_group).first
         response.id.should == '4382'
         response.group_ids.should == ["41"]
       end
 
       it "Should handle constituent addresses" do
-        response = connection.constituents.send(:from_response, @constituent_with_addr)
+        response = connection.constituents.send(:from_response, @constituent_with_addr).first
         response.addresses.size.should == 2
         response.addresses[0].should be_a BlueStateDigital::Address
         response.addresses[0].addr1.should == "yyy2"
@@ -232,7 +234,7 @@ describe BlueStateDigital::Constituent do
       end
 
       it "Should handle constituent email addresses" do
-        response = connection.constituents.send(:from_response, @constituent_with_emails)
+        response = connection.constituents.send(:from_response, @constituent_with_emails).first
         response.emails.size.should == 2
         response.emails[0].should be_a BlueStateDigital::Email
         response.emails[0].email.should == "gil+punky1@thoughtworks.com"

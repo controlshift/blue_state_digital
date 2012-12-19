@@ -113,15 +113,15 @@ module BlueStateDigital
     def from_response(string)
       parsed_result = Crack::XML.parse(string)
       if parsed_result["api"].present?
+        result = []
         if parsed_result["api"]["cons"].is_a?(Array)
-          results = []
           parsed_result["api"]["cons"].each do |cons_group|
-            results << from_hash(cons_group)
+            result << from_hash(cons_group)
           end
-          return results
         else
-          return from_hash(parsed_result["api"]["cons"])
+          result << from_hash(parsed_result["api"]["cons"])
         end
+        return result
       else
         nil
       end
