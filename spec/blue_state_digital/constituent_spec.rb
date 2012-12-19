@@ -10,6 +10,79 @@ describe BlueStateDigital::Constituent do
       pending
       @cons.group()
     end
+
+    context "with address" do
+      let(:expected_result) do
+        <<-xml_string.split("\n").map(&:strip).join
+          <?xml version="1.0" encoding="utf-8"?>
+          <api>
+            <cons>
+              <cons_addr>
+                <addr1>one</addr1>
+              </cons_addr>
+            </cons>
+          </api>
+        xml_string
+      end
+      it "should allow constituent addresses entries as hashes" do 
+        constituent = BlueStateDigital::Constituent.new addresses: [{addr1: 'one'}] 
+        constituent.to_xml.should == expected_result
+      end
+      it "should allow constituent addresses entries as BlueStateDigital::Addresses" do 
+        constituent = BlueStateDigital::Constituent.new addresses: [BlueStateDigital::Address.new(addr1: 'one')] 
+        constituent.to_xml.should == expected_result
+      end
+
+    end
+
+    context "with emails" do
+      let(:expected_result) do
+        <<-xml_string.split("\n").map(&:strip).join
+          <?xml version="1.0" encoding="utf-8"?>
+          <api>
+            <cons>
+              <cons_email>
+                <email>one@two.com</email>
+              </cons_email>
+            </cons>
+          </api>
+        xml_string
+      end
+      it "should allow constituent addresses entries as hashes" do 
+        constituent = BlueStateDigital::Constituent.new emails: [{email: 'one@two.com'}] 
+        constituent.to_xml.should == expected_result
+      end
+      it "should allow constituent addresses entries as BlueStateDigital::Addresses" do 
+        constituent = BlueStateDigital::Constituent.new emails: [BlueStateDigital::Email.new(email: 'one@two.com')] 
+        constituent.to_xml.should == expected_result
+      end
+
+    end
+
+    context "with phone numbers" do
+      let(:expected_result) do
+        <<-xml_string.split("\n").map(&:strip).join
+          <?xml version="1.0" encoding="utf-8"?>
+          <api>
+            <cons>
+              <cons_phone>
+                <phone>123321123</phone>
+              </cons_phone>
+            </cons>
+          </api>
+        xml_string
+      end
+      it "should allow constituent addresses entries as hashes" do 
+        constituent = BlueStateDigital::Constituent.new phones: [{phone: '123321123'}] 
+        constituent.to_xml.should == expected_result
+      end
+      it "should allow constituent addresses entries as BlueStateDigital::Addresses" do 
+        constituent = BlueStateDigital::Constituent.new phones: [BlueStateDigital::Phone.new(phone: '123321123')] 
+        constituent.to_xml.should == expected_result
+      end
+
+    end
+
   end
 
   let(:connection) { BlueStateDigital::Connection.new({}) }
@@ -193,6 +266,13 @@ describe BlueStateDigital::Constituent do
     end
 
     describe ".from_response" do
+      it "should set connection in generated constituents" do
+        response = connection.constituents.send(:from_response, @single_constituent)
+        response.should be_a(Array)
+        response.size.should == 1
+        response.first.connection.should == connection
+      end
+
       it "should create an array of constituents from a response that contains multiple constituents" do
         response = connection.constituents.send(:from_response, @multiple_constituents)
         response.should be_a(Array)

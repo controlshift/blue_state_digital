@@ -133,6 +133,7 @@ module BlueStateDigital
         attrs[field] = hash[field.to_s] if hash[field.to_s].present?
       end
       cons = Constituent.new(attrs)
+      cons.connection = connection
       if hash['cons_group'].present?
         if hash['cons_group'].is_a?(Array)
           cons.group_ids = hash['cons_group'].collect{|g| g["id"]}
