@@ -80,7 +80,7 @@ module BlueStateDigital
     end
 
     def build_constituent_address(address, cons)
-      cons.to_hash.cons_addr do |cons_addr|
+      cons.cons_addr do |cons_addr|
         address.to_hash.each do |key, value|
           eval("cons_addr.#{key}('#{value}')") unless value.blank?
         end
