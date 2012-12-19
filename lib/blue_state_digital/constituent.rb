@@ -1,6 +1,6 @@
 module BlueStateDigital
   class Constituent < ApiDataModel
-    FIELDS = [:id, :firstname, :lastname, :is_banned, :create_dt, :ext_id,
+    FIELDS = [:id, :firstname, :lastname, :is_banned, :create_dt, :ext_id, :birth_dt,
                   :emails, :addresses, :phones, :groups, :is_new]
     attr_accessor *FIELDS
     attr_accessor :group_ids
