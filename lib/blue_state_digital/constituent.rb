@@ -72,8 +72,8 @@ module BlueStateDigital
     end
 
     def build_constituent_phone(phone, cons)
-      cons.to_hash.cons_phone do |cons_phone|
-        phone.each do |key, value|
+      cons.cons_phone do |cons_phone|
+        phone.to_hash.each do |key, value|
           eval("cons_phone.#{key}('#{value}')") unless value.blank?
         end
       end
@@ -81,7 +81,7 @@ module BlueStateDigital
 
     def build_constituent_address(address, cons)
       cons.to_hash.cons_addr do |cons_addr|
-        address.each do |key, value|
+        address.to_hash.each do |key, value|
           eval("cons_addr.#{key}('#{value}')") unless value.blank?
         end
       end
