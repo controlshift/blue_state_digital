@@ -65,14 +65,14 @@ module BlueStateDigital
 
     def build_constituent_email(email, cons)
       cons.cons_email do |cons_email|
-        email.each do |key, value|
+        email.to_hash.each do |key, value|
           eval("cons_email.#{key}('#{value}')") unless value.blank?
         end
       end
     end
 
     def build_constituent_phone(phone, cons)
-      cons.cons_phone do |cons_phone|
+      cons.to_hash.cons_phone do |cons_phone|
         phone.each do |key, value|
           eval("cons_phone.#{key}('#{value}')") unless value.blank?
         end
@@ -80,7 +80,7 @@ module BlueStateDigital
     end
 
     def build_constituent_address(address, cons)
-      cons.cons_addr do |cons_addr|
+      cons.to_hash.cons_addr do |cons_addr|
         address.each do |key, value|
           eval("cons_addr.#{key}('#{value}')") unless value.blank?
         end
