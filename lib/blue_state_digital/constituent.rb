@@ -1,6 +1,6 @@
 module BlueStateDigital
   class Constituent < ApiDataModel
-    FIELDS = [:id, :firstname, :lastname, :is_banned, :create_dt, :ext_id, :birth_dt,
+    FIELDS = [:id, :firstname, :lastname, :is_banned, :create_dt, :ext_id, :birth_dt, :gender,
                   :emails, :addresses, :phones, :groups, :is_new]
     attr_accessor *FIELDS
     attr_accessor :group_ids
@@ -40,6 +40,7 @@ module BlueStateDigital
           cons.is_banned(self.is_banned) unless self.is_banned.blank?
           cons.create_dt(self.create_dt) unless self.create_dt.blank?
           cons.birth_dt(self.birth_dt) unless self.birth_dt.blank?
+          cons.gender(self.gender) unless self.gender.blank?
 
           unless self.emails.blank?
             self.emails.each {|email| build_constituent_email(email, cons) }

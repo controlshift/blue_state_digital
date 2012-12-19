@@ -83,7 +83,7 @@ describe BlueStateDigital::Constituent do
 
     end
 
-    [:firstname,:lastname,:is_banned,:create_dt,:birth_dt].each do |param|
+    [:firstname,:lastname,:is_banned,:create_dt,:birth_dt,:gender].each do |param|
       describe "with #{param}" do
         let (:expected_result) do
           <<-xml_string.split("\n").map(&:strip).join
@@ -309,6 +309,7 @@ describe BlueStateDigital::Constituent do
         response.size.should == 1
         response.first.id.should == "4382"
         response.first.firstname.should == 'Bob'
+        response.first.gender.should == 'M'
       end
 
       it "should handle constituent group membership" do
