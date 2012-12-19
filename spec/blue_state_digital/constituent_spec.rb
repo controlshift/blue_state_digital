@@ -11,7 +11,7 @@ describe BlueStateDigital::Constituent do
       @cons.group()
     end
 
-    context "with address" do
+    context "with addresses" do
       let(:expected_result) do
         <<-xml_string.split("\n").map(&:strip).join
           <?xml version="1.0" encoding="utf-8"?>
@@ -82,6 +82,28 @@ describe BlueStateDigital::Constituent do
       end
 
     end
+
+    [:firstname,:lastname,:is_banned,:create_dt,:birth_dt].each do |param|
+      describe "with #{param}" do
+        let (:expected_result) do
+          <<-xml_string.split("\n").map(&:strip).join
+            <?xml version="1.0" encoding="utf-8"?>
+            <api>
+              <cons>
+                <#{param.to_s}>#{param.to_s}_value</#{param.to_s}>
+              </cons>
+            </api>
+          xml_string
+        end
+        it "should be present as #{param.to_s} tag in cons tag" do
+          constituent = BlueStateDigital::Constituent.new 
+          eval("constituent.#{param.to_s}='#{param.to_s}_value'")
+          constituent.to_xml.should == expected_result
+        end 
+
+      end
+    end
+
 
   end
 
