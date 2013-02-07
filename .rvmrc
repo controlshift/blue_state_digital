@@ -1,5 +1,8 @@
-#!/usr/bin/env bash
-
 rvm_install_on_use_flag=1
-rvm use --create 1.9.3-p0@blue_state_digital
+rvm use --create ruby-1.9.3-p286-perf@blue_state_digital
 
+export RUBY_HEAP_MIN_SLOTS=1000000
+export RUBY_HEAP_SLOTS_INCREMENT=1000000
+export RUBY_HEAP_SLOTS_GROWTH_FACTOR=1
+export RUBY_GC_MALLOC_LIMIT=1000000000
+export RUBY_HEAP_FREE_MIN=500000
