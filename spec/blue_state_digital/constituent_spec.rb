@@ -5,11 +5,6 @@ describe BlueStateDigital::Constituent do
     before(:each) do
       @cons = BlueStateDigital::Constituent.new({})
     end
-
-    it "should allow setting of address fields" do
-      pending
-      @cons.group()
-    end
   end
 
   let(:connection) { BlueStateDigital::Connection.new({}) }

@@ -9,6 +9,8 @@
 # <latitude>42.000</latitude>
 # <longitude>71.000</longitude>
 
+# TODO: this is not used. Future development should include modelling Phone and Address portions of the Constituent model.
+
 module BlueStateDigital
   class Address < ApiDataModel
     FIELDS = [:addr1, :addr2, :city, :state_cd, :zip, :zip_4, :country, :is_primary, :latitude, :longitude]

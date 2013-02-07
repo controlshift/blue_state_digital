@@ -8,12 +8,12 @@ describe BlueStateDigital::Address do
   #completely unclear why these pass.
 
   it "should convert address fields to_xml" do
-    pending
+    pending "address model is not yet used"
     subject.to_xml.should == "<xml>"
   end
 
   it "should return a builder" do
-    pending
+    pending "address model is not yet used"
     subject.to_xml.should be_a(Builder)
   end
 end
