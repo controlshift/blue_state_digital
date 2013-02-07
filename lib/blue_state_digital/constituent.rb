@@ -74,7 +74,7 @@ module BlueStateDigital
     def build_constituent_phone(phone, cons)
       cons.cons_phone do |cons_phone|
         phone.each do |key, value|
-          eval("cons_phone.#{attr}('#{value}')") unless value.blank?
+          eval("cons_phone.#{key}('#{value}')") unless value.blank?
         end
       end
     end
@@ -82,7 +82,7 @@ module BlueStateDigital
     def build_constituent_address(address, cons)
       cons.cons_addr do |cons_addr|
         address.each do |key, value|
-          eval("cons_addr.#{attr}('#{value}')") unless value.blank?
+          eval("cons_addr.#{key}('#{value}')") unless value.blank?
         end
       end
     end

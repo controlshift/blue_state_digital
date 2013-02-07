@@ -204,4 +204,18 @@ describe BlueStateDigital::Constituent do
     cons_data.is_new.should == '1'
     cons_data.is_new?.should be_true
   end
+
+  describe "#to_xml" do
+    it "should convert a constituent hash to xml" do
+      cons = BlueStateDigital::Constituent.new ({
+          firstname: 'George',
+          lastname: 'Washington',
+          create_dt: Time.now.to_i,
+          emails: [{ email: 'george@washington.com', is_subscribed: 1}],
+          addresses: [{ country: 'US', zip: '20001', is_primary: 1}],
+          phones: [{phone: '123456789', phone_type: 'unknown'}]
+      })
+      cons.to_xml.should_not be_nil
+    end
+  end
 end
