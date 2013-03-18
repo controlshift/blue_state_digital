@@ -223,6 +223,11 @@ xml_string
     
     connection.constituent_groups.add_cons_ids_to_group(cons_group_id, cons_ids)
   end
+
+  it "should rename the constituent group" do
+    connection.should_receive(:perform_request).with('/cons_group/rename_group', {cons_group_id: "1", new_name: "foo"}, "POST").and_return("")
+    connection.constituent_groups.rename_group("1", "foo")
+  end
   
   it "should allow replace_constituent_group!" do
     old_cons_group_id = 15

@@ -79,7 +79,11 @@ module BlueStateDigital
       from_response( connection.perform_request '/cons_group/get_constituent_group_by_slug', {slug: slug}, "GET" )
     end
 
-    # Warning: this is an expensive, potentially dangerous operation!
+    def rename_group(id, new_name)
+      connection.perform_request '/cons_group/rename_group', {cons_group_id: id, new_name: new_name}, "POST"
+    end
+
+    # Warning: this is an expensive, potentially dangerous operation! You should almost always use rename group instead.
     def replace_constituent_group!(old_group_id, new_group_attrs)
       # first, check to see if this group exists.
       group = get_constituent_group(old_group_id)
