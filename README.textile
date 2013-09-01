@@ -1,3 +1,0 @@
-h1. Blue State Digital Gem
-
-"!https://secure.travis-ci.org/controlshift/blue_state_digital.png!":http://travis-ci.org/controlshift/blue_state_digital
