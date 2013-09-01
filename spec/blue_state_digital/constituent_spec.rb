@@ -6,11 +6,6 @@ describe BlueStateDigital::Constituent do
       @cons = BlueStateDigital::Constituent.new({})
     end
 
-    it "should allow setting of address fields" do
-      pending
-      @cons.group()
-    end
-
     context "with addresses" do
       let(:expected_result) do
         <<-xml_string.split("\n").map(&:strip).join

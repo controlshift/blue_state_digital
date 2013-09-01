@@ -5,15 +5,8 @@ describe BlueStateDigital::Address do
   specify { subject.latitude.should == "40.1" }
   specify { subject.longitude.should == "40.2" }
 
-  #completely unclear why these pass.
-
-  it "should convert address fields to_xml" do
-    pending "address model is not yet used"
-    subject.to_xml.should == "<xml>"
-  end
 
   it "should return a builder" do
-    pending "address model is not yet used"
     subject.to_xml.should be_a(Builder)
   end
 
