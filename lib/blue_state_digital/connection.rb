@@ -8,16 +8,25 @@ module BlueStateDigital
     def initialize(params = {})
       @api_id = params[:api_id]
       @api_secret = params[:api_secret]
-      @client = RestClient::Resource.new(params[:host])
+      @client = Faraday.new(:url => "https://#{params[:host]}/") do |faraday|
+        faraday.request  :url_encoded             # form-encode POST params
+        faraday.response :logger                  # log requests to STDOUT
+        faraday.adapter(params[:adapter] || Faraday.default_adapter)  # make requests with Net::HTTP by default
+      end
       set_up_resources
     end
     
     def perform_request(call, params = {}, method = "GET", body = nil)
       path = API_BASE + call
       if method == "POST"
-        @client[path].post body, content_type: 'application/x-www-form-urlencoded', accept: 'text/xml', params: extended_params(path, params)
+        @client.post do |req|
+          req.url(path, extended_params(path, params))
+          req.body = body
+          req.headers['Content-Type'] = 'application/x-www-form-urlencoded'
+          req.headers['Accept'] = 'text/xml'
+        end
       else
-        @client[path].get params: extended_params(path, params)
+        @client.get(path, extended_params(path, params))
       end
     end
     

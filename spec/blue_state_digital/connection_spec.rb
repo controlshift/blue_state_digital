@@ -3,7 +3,7 @@ require 'blue_state_digital/connection'
 require 'timecop'
 
 describe BlueStateDigital::Connection do
-  let(:api_host) { 'enoch.bluestatedigital.com:17260' }
+  let(:api_host) { 'enoch.bluestatedigital.com' }
   let(:api_id) { 'sfrazer' }
   let(:api_secret) { '7405d35963605dc36702c06314df85db7349613f' }
   let(:connection) { BlueStateDigital::Connection.new({host: api_host, api_id: api_id, api_secret: api_secret})}
@@ -17,7 +17,7 @@ describe BlueStateDigital::Connection do
         api_ts = timestamp.utc.to_i.to_s
         api_mac = connection.compute_hmac("/page/api#{api_call}", api_ts, { api_ver: '1', api_id: api_id, api_ts: api_ts })
 
-        stub_url = "http://#{api_host}/page/api/somemethod?api_id=#{api_id}&api_mac=#{api_mac}&api_ts=#{api_ts}&api_ver=1"
+        stub_url = "https://#{api_host}/page/api/somemethod?api_id=#{api_id}&api_mac=#{api_mac}&api_ts=#{api_ts}&api_ver=1"
         stub_request(:post, stub_url).with do |request|
           request.body.should == "a=b"
           request.headers['Accept'].should == 'text/xml'
@@ -36,7 +36,7 @@ describe BlueStateDigital::Connection do
         api_ts = timestamp.utc.to_i.to_s
         api_mac = connection.compute_hmac("/page/api#{api_call}", api_ts, { api_ver: '1', api_id: api_id, api_ts: api_ts })
 
-        stub_url = "http://#{api_host}/page/api/somemethod?api_id=#{api_id}&api_mac=#{api_mac}&api_ts=#{api_ts}&api_ver=1"
+        stub_url = "https://#{api_host}/page/api/somemethod?api_id=#{api_id}&api_mac=#{api_mac}&api_ts=#{api_ts}&api_ver=1"
         stub_request(:get, stub_url)
 
         connection.perform_request(api_call, params = {})
