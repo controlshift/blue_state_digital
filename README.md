@@ -17,6 +17,14 @@ cons.Id # created constituent ID
 
 ```
 
+Use the event machine adapter:
+
+```ruby
+
+connection = BlueStateDigital::Connection.new(host:'foo.com' api_id: 'bar', api_secret: 'magic_secret', adapter: :em_synchrony)
+
+```
+
 ## CI
 [![Build Status](https://secure.travis-ci.org/controlshift/blue_state_digital.png)](http://travis-ci.org/controlshift/blue_state_digital)
 

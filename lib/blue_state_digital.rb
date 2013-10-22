@@ -1,5 +1,4 @@
 require 'openssl'
-require 'rest_client'
 require 'builder'
 require 'nokogiri'
 require 'active_support/core_ext'
