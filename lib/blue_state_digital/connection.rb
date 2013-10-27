@@ -26,7 +26,7 @@ module BlueStateDigital
           req.headers['Accept'] = 'text/xml'
         end
       else
-        @client.get(path, extended_params(path, params))
+        @client.get(path, extended_params(path, params)).body
       end
     end
     
