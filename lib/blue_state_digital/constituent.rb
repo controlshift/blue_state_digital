@@ -95,10 +95,10 @@ module BlueStateDigital
       get_constituents "email=#{email}", bundles
     end
 
-    def get_constituents_by_id(cons_ids)
+    def get_constituents_by_id(cons_ids, bundles = ['cons_group'])
       cons_ids_concat = cons_ids.is_a?(Array) ? cons_ids.join(',') : cons_ids.to_s
 
-      from_response(connection.perform_request('/cons/get_constituents_by_id', {:cons_ids => cons_ids_concat, :bundles=> 'cons_group'}, "GET"))
+      from_response(connection.perform_request('/cons/get_constituents_by_id', {:cons_ids => cons_ids_concat, :bundles=> bundles.join(',')}, "GET"))
     end
 
     def get_constituents(filter, bundles = 'cons_group')
