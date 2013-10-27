@@ -5,3 +5,4 @@ test.rb
 *.tmproj
 tmp/
 pkg/
+example.rb
