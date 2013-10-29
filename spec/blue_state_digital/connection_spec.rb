@@ -23,9 +23,10 @@ describe BlueStateDigital::Connection do
           request.headers['Accept'].should == 'text/xml'
           request.headers['Content-Type'].should == 'application/x-www-form-urlencoded'
           true
-        end
+        end.to_return(body: "body")
 
-        connection.perform_request(api_call, params = {}, method = "POST", body = "a=b")
+        response = connection.perform_request(api_call, params = {}, method = "POST", body = "a=b")
+        response.should == "body"
       end
     end
 
@@ -37,9 +38,10 @@ describe BlueStateDigital::Connection do
         api_mac = connection.compute_hmac("/page/api#{api_call}", api_ts, { api_ver: '1', api_id: api_id, api_ts: api_ts })
 
         stub_url = "https://#{api_host}/page/api/somemethod?api_id=#{api_id}&api_mac=#{api_mac}&api_ts=#{api_ts}&api_ver=1"
-        stub_request(:get, stub_url)
+        stub_request(:get, stub_url).to_return(body: "body")
 
-        connection.perform_request(api_call, params = {})
+        response = connection.perform_request(api_call, params = {})
+        response.should == "body"
       end
     end
   end

@@ -24,7 +24,7 @@ module BlueStateDigital
           req.body = body
           req.headers['Content-Type'] = 'application/x-www-form-urlencoded'
           req.headers['Accept'] = 'text/xml'
-        end
+        end.body
       else
         @client.get(path, extended_params(path, params)).body
       end
