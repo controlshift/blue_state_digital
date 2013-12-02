@@ -14,8 +14,12 @@ module BlueStateDigital
       xml = connection.perform_request '/cons/set_constituent_data', {}, "POST", self.to_xml
       doc = Nokogiri::XML(xml)
       record =  doc.xpath('//cons').first
-      self.id = record[:id]
-      self.is_new = record[:is_new]
+      if record
+        self.id = record[:id]
+        self.is_new = record[:is_new]
+      else
+        raise "Set constituent data failed with message: #{xml}"
+      end
       self
     end
 
