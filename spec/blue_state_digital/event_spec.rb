@@ -39,17 +39,32 @@ describe BlueStateDigital::Event do
 
   describe '#save' do
     let(:connection) { double }
-    let(:response) { '{"event_type_id":"1", "creator_cons_id":"2", "name":"event 1", "description":"my event", "venue_name":"home", "venue_zip":"10001", "venue_city":"New York", "venue_state_cd":"NY", "days":[{"start_dt":"2014-02-13 22:00:00", "duration":"180"}]}' }
+    let(:event) { BlueStateDigital::Event.new(event_attributes.merge({ connection: connection })) }
 
-    it "should perform API request and return parsed JSON response" do
-      event_attributes[:connection] = connection
-      event = BlueStateDigital::Event.new(event_attributes)
+    before :each do
       connection
         .should_receive(:perform_request)
         .with('/event/create_event', {accept: 'application/json', event_api_version: '2', values: event.to_json}, 'POST')
         .and_return(response)
+    end
 
-      event.save.should == JSON.parse(response)
+    context 'successful' do
+      let(:response) { '{"event_id_obfuscated":"xyz", "event_type_id":"1", "creator_cons_id":"2", "name":"event 1", "description":"my event", "venue_name":"home", "venue_zip":"10001", "venue_city":"New York", "venue_state_cd":"NY", "days":[{"start_dt":"2014-02-13 22:00:00", "duration":"180"}]}' }
+
+      it "should perform API request and return event with event_id_obfuscated set" do
+        saved_event = event.save
+
+        saved_event.should_not be_nil
+        saved_event.event_id_obfuscated.should == 'xyz'
+      end
+    end
+
+    context 'validation error' do
+      let(:response) { '{"validation_errors":{"venue_zip":["required","regex"], "name":["required"]}}' }
+
+      it "should raise error" do
+        expect { event.save }.to raise_error(BlueStateDigital::Event::EventSaveValidationException, /venue_zip.*name/m)
+      end
     end
   end
 end
