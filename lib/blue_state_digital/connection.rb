@@ -2,6 +2,7 @@ module BlueStateDigital
   class Connection
     API_VERSION = 1
     API_BASE = '/page/api'
+    GRAPH_API_BASE = '/page/graph'
 
     attr_reader :constituents, :constituent_groups
 
@@ -29,6 +30,16 @@ module BlueStateDigital
         end.body
       else
         @client.get(path, extended_params(path, params)).body
+      end
+    end
+
+    def perform_graph_request(call, params, method = 'POST')
+      path = GRAPH_API_BASE + call
+
+      if method == "POST"
+        @client.post do |req|
+          req.url(path, params)
+        end
       end
     end
 

@@ -8,7 +8,6 @@ describe BlueStateDigital::Connection do
   let(:api_secret) { '7405d35963605dc36702c06314df85db7349613f' }
   let(:connection) { BlueStateDigital::Connection.new({host: api_host, api_id: api_id, api_secret: api_secret})}
 
-
   describe "#perform_request" do
     context 'POST' do
       it "should perform POST request" do
@@ -75,6 +74,20 @@ describe BlueStateDigital::Connection do
         response = connection.perform_request(api_call, params = {})
         response.should == "body"
       end
+    end
+  end
+
+  describe "perform_graph_request" do
+    let(:faraday_client) { double(request: nil, response: nil, adapter: nil) }
+
+    it "should perform Graph API request" do
+      post_request = double
+      post_request.should_receive(:url).with('/page/graph/rsvp/add', {param1: 'my_param', param2: 'my_other_param'})
+      faraday_client.should_receive(:post).and_yield(post_request).and_return(post_request)
+      Faraday.stub(:new).and_yield(faraday_client).and_return(faraday_client)
+      connection = BlueStateDigital::Connection.new({host: api_host, api_id: api_id, api_secret: api_secret})
+
+      connection.perform_graph_request('/rsvp/add', {param1: 'my_param', param2: 'my_other_param'}, 'POST')
     end
   end
 
