@@ -1,6 +1,6 @@
 module BlueStateDigital
   class EventRSVP < ApiDataModel
-    FIELDS = [:event_id, :will_attend, :cons_id]
+    FIELDS = [:event_id_obfuscated, :will_attend, :cons_id]
     attr_accessor *FIELDS
 
     def save
