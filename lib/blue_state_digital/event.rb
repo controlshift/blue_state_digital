@@ -14,7 +14,12 @@ module BlueStateDigital
     attr_accessor *FIELDS
 
     def save
-      response_json_text = connection.perform_request '/event/create_event', {accept: 'application/json', event_api_version: '2', values: self.to_json}, "POST"
+      if self.event_id_obfuscated.blank?
+        response_json_text = connection.perform_request '/event/create_event', {accept: 'application/json', event_api_version: '2', values: self.to_json}, "POST"
+      else
+        response_json_text = connection.perform_request '/event/update_event', {accept: 'application/json', event_api_version: '2', values: self.to_json}, "POST"
+      end
+
       response = JSON.parse(response_json_text)
       if response['validation_errors']
         raise EventSaveValidationException, response['validation_errors']
