@@ -4,7 +4,7 @@ module BlueStateDigital
     attr_accessor *FIELDS
 
     def save
-      connection.perform_graph_request '/rsvp/add', self.attributes, "POST"
+      connection.perform_graph_request '/addrsvp', self.attributes, "POST"
     end
 
     def attributes

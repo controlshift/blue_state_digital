@@ -9,7 +9,7 @@ describe BlueStateDigital::EventRSVP do
     let(:event_rsvp_attributes) { { event_id_obfuscated: 'xyz', will_attend: '1', cons_id: '99' } }
 
     it "should save using Graph API" do
-      connection.should_receive(:perform_graph_request).with('/rsvp/add', { event_id_obfuscated: 'xyz', will_attend: '1', cons_id: '99' }, 'POST')
+      connection.should_receive(:perform_graph_request).with('/addrsvp', { event_id_obfuscated: 'xyz', will_attend: '1', cons_id: '99' }, 'POST')
 
       subject.save
     end
