@@ -2,9 +2,10 @@ module BlueStateDigital
   class Connection
     API_VERSION = 1
     API_BASE = '/page/api'
+    GRAPH_API_BASE = '/page/graph'
 
     attr_reader :constituents, :constituent_groups
-    
+
     def initialize(params = {})
       @api_id = params[:api_id]
       @api_secret = params[:api_secret]
@@ -15,26 +16,38 @@ module BlueStateDigital
       end
       set_up_resources
     end
-    
+
     def perform_request(call, params = {}, method = "GET", body = nil)
       path = API_BASE + call
       if method == "POST"
         @client.post do |req|
+          content_type = params.delete(:content_type) || 'application/x-www-form-urlencoded'
+          accept = params.delete(:accept) || 'text/xml'
           req.url(path, extended_params(path, params))
           req.body = body
-          req.headers['Content-Type'] = 'application/x-www-form-urlencoded'
-          req.headers['Accept'] = 'text/xml'
+          req.headers['Content-Type'] = content_type
+          req.headers['Accept'] = accept
         end.body
       else
         @client.get(path, extended_params(path, params)).body
       end
     end
-    
+
+    def perform_graph_request(call, params, method = 'POST')
+      path = GRAPH_API_BASE + call
+
+      if method == "POST"
+        @client.post do |req|
+          req.url(path, params)
+        end
+      end
+    end
+
     def compute_hmac(path, api_ts, params)
-      signing_string = [@api_id, api_ts, path, params.map { |k,v| "#{k.to_s}=#{v.to_s}" }.join('&')].join("\n")                       
+      signing_string = [@api_id, api_ts, path, params.map { |k,v| "#{k.to_s}=#{v.to_s}" }.join('&')].join("\n")
       OpenSSL::HMAC.hexdigest('sha1', @api_secret, signing_string)
     end
-    
+
     def extended_params(path, params)
       api_ts = Time.now.utc.to_i.to_s
       extended_params = { api_ver: API_VERSION, api_id: @api_id, api_ts: api_ts }.merge(params)
