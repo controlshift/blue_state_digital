@@ -6,3 +6,4 @@ test.rb
 tmp/
 pkg/
 example.rb
+.DS_Store
