@@ -8,7 +8,7 @@ describe BlueStateDigital::ConstituentGroup do
     </api>
     xml_string
     @empty_response.strip!
-    
+
     @multiple_cons_groups = <<-xml_string
 <?xml version="1.0" encoding="utf-8"?>
 <api>
@@ -77,7 +77,7 @@ xml_string
       group.should be_a(BlueStateDigital::ConstituentGroup)
       group.id.should == '13'
     end
-     
+
     it "should handle an empty result" do
       connection.should_receive(:perform_request).with('/cons_group/get_constituent_group', {cons_group_id: 13}, "GET").and_return(@empty_response)
       group = connection.constituent_groups.find_by_id(13)
@@ -95,7 +95,7 @@ xml_string
     it "should handle a single integer" do
       connection.should_receive(:perform_request).with('/cons_group/delete_constituent_groups', {:cons_group_ids=>"2"}, "POST").and_return("deferred_id")
       connection.should_receive(:perform_request).with('/get_deferred_results', {deferred_id: "deferred_id"}, "GET").and_return(true)
-      
+
       connection.constituent_groups.delete_constituent_groups(2)
     end
   end
@@ -179,7 +179,7 @@ xml_string
         response.slug.should == 'q1donors'
       end
     end
-    
+
     describe "multiple groups" do
       it "should create an array of groups from an xml string" do
         response = connection.constituent_groups.send(:from_response, @multiple_cons_groups)
@@ -190,62 +190,66 @@ xml_string
       end
     end
   end
-  
-  it "should add constituent ids to group" do
-    cons_group_id = "12"
-    cons_ids = ["1", "2"]
-    post_params = { cons_group_id: cons_group_id, cons_ids: "1,2" }
-    
-    connection.should_receive(:perform_request).with('/cons_group/add_cons_ids_to_group', post_params, "POST").and_return("deferred_id")
-    connection.should_receive(:perform_request).with('/get_deferred_results', {deferred_id: "deferred_id"}, "GET").and_return(true)
-    
-    connection.constituent_groups.add_cons_ids_to_group(cons_group_id, cons_ids)
-  end
 
-  it "should not wait for the result if told not to" do
-    cons_group_id = "12"
-    cons_ids = ["1", "2"]
-    post_params = { cons_group_id: cons_group_id, cons_ids: "1,2" }
+  [[:add, 'add_cons_ids_to_group'], [:remove, 'remove_cons_ids_from_group']].each do |(operation, method)|
+    # operation, method = method_under_test.key, method_under_test.value
 
-    connection.should_receive(:perform_request).with('/cons_group/add_cons_ids_to_group', post_params, "POST").and_return("deferred_id")
-    connection.should_not_receive(:perform_request).with('/get_deferred_results', {deferred_id: "deferred_id"}, "GET")
+    it "should #{operation} constituent ids to group" do
+      cons_group_id = "12"
+      cons_ids = ["1", "2"]
+      post_params = { cons_group_id: cons_group_id, cons_ids: "1,2" }
 
-    connection.constituent_groups.add_cons_ids_to_group(cons_group_id, cons_ids,  {wait_for_result: false})
-  end
-  
-  it "should add a single constituent id to a group" do
-    cons_group_id = "12"
-    cons_ids = ["1"]
-    post_params = { cons_group_id: cons_group_id, cons_ids: "1" }
-    
-    connection.should_receive(:perform_request).with('/cons_group/add_cons_ids_to_group', post_params, "POST").and_return("deferred_id")
-    connection.should_receive(:perform_request).with('/get_deferred_results', {deferred_id: "deferred_id"}, "GET").and_return(true)
-    
-    connection.constituent_groups.add_cons_ids_to_group(cons_group_id, cons_ids)
+      connection.should_receive(:perform_request).with("/cons_group/#{method}", post_params, "POST").and_return("deferred_id")
+      connection.should_receive(:perform_request).with('/get_deferred_results', {deferred_id: "deferred_id"}, "GET").and_return(true)
+
+      connection.constituent_groups.send(method.to_sym, cons_group_id, cons_ids)
+    end
+
+    it "should not wait for the result if told not to" do
+      cons_group_id = "12"
+      cons_ids = ["1", "2"]
+      post_params = { cons_group_id: cons_group_id, cons_ids: "1,2" }
+
+      connection.should_receive(:perform_request).with("/cons_group/#{method}", post_params, "POST").and_return("deferred_id")
+      connection.should_not_receive(:perform_request).with('/get_deferred_results', {deferred_id: "deferred_id"}, "GET")
+
+      connection.constituent_groups.send(method.to_sym, cons_group_id, cons_ids,  {wait_for_result: false})
+    end
+
+    it "should #{operation} a single constituent id to a group" do
+      cons_group_id = "12"
+      cons_ids = ["1"]
+      post_params = { cons_group_id: cons_group_id, cons_ids: "1" }
+
+      connection.should_receive(:perform_request).with("/cons_group/#{method}", post_params, "POST").and_return("deferred_id")
+      connection.should_receive(:perform_request).with('/get_deferred_results', {deferred_id: "deferred_id"}, "GET").and_return(true)
+
+      connection.constituent_groups.send(method.to_sym, cons_group_id, cons_ids)
+    end
   end
 
   it "should rename the constituent group" do
     connection.should_receive(:perform_request).with('/cons_group/rename_group', {cons_group_id: "1", new_name: "foo"}, "POST").and_return("")
     connection.constituent_groups.rename_group("1", "foo")
   end
-  
+
   it "should allow replace_constituent_group!" do
     old_cons_group_id = 15
     new_cons_group_id = 1
     attrs = { name: "Environment", slug: "environment", description: "Environment Group", group_type: "manual", create_dt: @timestamp }
-    new_group = double()
+    new_group = double
     new_group.stub(:id).and_return(new_cons_group_id)
 
-    old_group = double()
+    old_group = double
     old_group.stub(:id).and_return(old_cons_group_id)
-    
-    
+
+
     connection.constituent_groups.should_receive(:get_constituent_group).with(old_cons_group_id).and_return( old_group )
     connection.constituent_groups.should_receive(:find_or_create).with(attrs).and_return( new_group )
     connection.constituent_groups.should_receive(:get_cons_ids_for_group).with(old_cons_group_id).and_return( [1, 2, 3] )
     connection.constituent_groups.should_receive(:add_cons_ids_to_group).with(new_cons_group_id, [1, 2, 3] )
     connection.constituent_groups.should_receive(:delete_constituent_groups).with( old_cons_group_id )
-    
+
     connection.constituent_groups.replace_constituent_group!(old_cons_group_id, attrs).should == new_group
   end
 end
