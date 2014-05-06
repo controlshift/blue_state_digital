@@ -32,4 +32,5 @@ Gem::Specification.new do |s|
   s.add_dependency "builder"
   s.add_dependency "nokogiri"
   s.add_dependency "crack"
+  s.add_dependency "hashie"
 end
