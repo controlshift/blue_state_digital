@@ -233,10 +233,10 @@ xml_string
     old_cons_group_id = 15
     new_cons_group_id = 1
     attrs = { name: "Environment", slug: "environment", description: "Environment Group", group_type: "manual", create_dt: @timestamp }
-    new_group = mock()
+    new_group = double()
     new_group.stub(:id).and_return(new_cons_group_id)
 
-    old_group = mock()
+    old_group = double()
     old_group.stub(:id).and_return(old_cons_group_id)
     
     
