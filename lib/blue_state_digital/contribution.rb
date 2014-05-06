@@ -6,6 +6,11 @@ module BlueStateDigital
         super("Missing GUID for ID")
       end
     end
+    class ContributionSaveFailureException < StandardError
+      def initialize(msg)
+        super
+      end  
+    end
     class ContributionSaveValidationException < StandardError
       def initialize(validation_errors)
         error_messages = validation_errors.map do |id,msgs|
@@ -16,7 +21,7 @@ module BlueStateDigital
     end
 
     FIELDS = [
-      :id,
+      :external_id,
       :prefix,:firstname,:middlename,:lastname,:suffix,
       :transaction_dt,:transaction_amt,:cc_type_cd,:gateway_transaction_id,
       :contribution_page_id,:stg_contribution_recurring_id,:contribution_page_slug,
@@ -31,12 +36,17 @@ module BlueStateDigital
     def save
       begin
         if connection
-          response = JSON.parse(connection.perform_request( 
+          response = connection.perform_request( 
             '/contribution/add_external_contribution',
             {accept: 'application/json'},
             'POST',
-            self.to_json
-          ))
+            [self].to_json
+          )
+          begin
+            response = JSON.parse(response)  
+          rescue
+            raise ContributionSaveFailureException.new(response)
+          end
           if(response['summary']['missing_ids']>0)
             raise ContributionExternalIdMissingException.new
           elsif(response['summary']['failures']>0)
@@ -45,7 +55,8 @@ module BlueStateDigital
         else
           raise NoConnectionException.new
         end
-        self
+        #TODO shouldn't we be returning true or false and set the errors as in ActiveModel?
+        true
       rescue => e
         raise e
       end

@@ -1,19 +1,28 @@
 require 'spec_helper'
 
 describe BlueStateDigital::Contribution do
-  let(:attributes) { {} }
+  let(:attributes) { 
+    {
+      external_id:      'GUID_1234',
+      firstname:        'carlos',
+      lastname:         'the jackal',
+      transaction_amt:  1.0,
+      transaction_dt:   '2012-12-31 23:59:59',
+      cc_type_cd:       'vs'
+    } 
+  }
 
-    it { should have_fields(
-      :id,
-      :prefix,:firstname,:middlename,:lastname,:suffix,
-      :transaction_dt,:transaction_amt,:cc_type_cd,:gateway_transaction_id,
-      :contribution_page_id,:stg_contribution_recurring_id,:contribution_page_slug,
-      :outreach_page_id,:source,:opt_compliance,
-      :addr1,:addr2,:city,:state_cd,:zip,:country,
-      :phone,:email,
-      :employer,:occupation,
-      :customFields
-      ) }
+  it { should have_fields(
+    :external_id,
+    :prefix,:firstname,:middlename,:lastname,:suffix,
+    :transaction_dt,:transaction_amt,:cc_type_cd,:gateway_transaction_id,
+    :contribution_page_id,:stg_contribution_recurring_id,:contribution_page_slug,
+    :outreach_page_id,:source,:opt_compliance,
+    :addr1,:addr2,:city,:state_cd,:zip,:country,
+    :phone,:email,
+    :employer,:occupation,
+    :customFields
+    ) }
 
   describe 'save' do
     let(:connection) { double }
@@ -22,7 +31,12 @@ describe BlueStateDigital::Contribution do
     before :each do
       connection
         .should_receive(:perform_request)
-        .with('/contribution/add_external_contribution', {accept: 'application/json'}, 'POST',contribution.to_json)
+        .with(
+          '/contribution/add_external_contribution', 
+          {accept: 'application/json'}, 
+          'POST',
+          [contribution].to_json
+        )
         .and_return(response)
     end
 
@@ -46,6 +60,15 @@ describe BlueStateDigital::Contribution do
     end
 
     context 'failure' do
+      context 'bad request' do
+        let(:response) { 'Method add_external_contribution expects a JSON array.' }
+        it "should raise error" do
+          expect { contribution.save }.to raise_error(
+            BlueStateDigital::Contribution::ContributionSaveFailureException,
+            /Method add_external_contribution expects a JSON array/m
+          )
+        end
+      end   
       context 'missing ID' do
         let(:response) {
           { 
@@ -59,7 +82,9 @@ describe BlueStateDigital::Contribution do
           }.to_json
         }
         it "should raise error" do
-          expect { contribution.save }.to raise_error(BlueStateDigital::Contribution::ContributionExternalIdMissingException)
+          expect { contribution.save }.to raise_error(
+            BlueStateDigital::Contribution::ContributionExternalIdMissingException
+          )
         end
       end
       context 'validation errors' do
