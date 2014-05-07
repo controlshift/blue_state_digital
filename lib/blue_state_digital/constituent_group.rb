@@ -20,16 +20,11 @@ module BlueStateDigital
 
   class ConstituentGroups < CollectionResource
     def add_cons_ids_to_group(cons_group_id, cons_ids, options = {wait_for_result: true})
-      cons_ids = cons_ids.is_a?(Array) ? cons_ids : [cons_ids]
-      cons_ids.in_groups_of(100) do
-        cons_ids_concat = cons_ids.join(',')
-        post_params = { cons_group_id: cons_group_id, cons_ids: cons_ids_concat }
-        if options[:wait_for_result]
-          connection.wait_for_deferred_result( connection.perform_request '/cons_group/add_cons_ids_to_group', post_params, "POST" )
-        else
-          connection.perform_request '/cons_group/add_cons_ids_to_group', post_params, "POST"
-        end
-      end
+      add_or_remove_cons_ids_from_group(:add, cons_group_id, cons_ids, options)
+    end
+
+    def remove_cons_ids_from_group(cons_group_id, cons_ids, options = {wait_for_result: true})
+      add_or_remove_cons_ids_from_group(:remove, cons_group_id, cons_ids, options)
     end
 
     def create(attrs = {})
@@ -129,6 +124,26 @@ module BlueStateDigital
         attrs[field] = hash[field.to_s] if hash[field.to_s].present?
       end
       ConstituentGroup.new(attrs)
+    end
+
+    def add_or_remove_cons_ids_from_group(operation, cons_group_id, cons_ids, options)
+      method = case operation
+                when :add
+                  'add_cons_ids_to_group'
+                when :remove
+                  'remove_cons_ids_from_group'
+              end
+      cons_ids = cons_ids.is_a?(Array) ? cons_ids : [cons_ids]
+
+      cons_ids.in_groups_of(100) do
+        cons_ids_concat = cons_ids.join(',')
+        post_params = { cons_group_id: cons_group_id, cons_ids: cons_ids_concat }
+        if options[:wait_for_result]
+          connection.wait_for_deferred_result( connection.perform_request "/cons_group/#{method}", post_params, "POST" )
+        else
+          connection.perform_request "/cons_group/#{method}", post_params, "POST"
+        end
+      end
     end
   end
 end
