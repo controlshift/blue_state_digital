@@ -22,3 +22,5 @@ require "blue_state_digital/event"
 require "blue_state_digital/event_rsvp"
 require "blue_state_digital/dataset"
 require "blue_state_digital/dataset_map"
+
+I18n.enforce_available_locales = false
