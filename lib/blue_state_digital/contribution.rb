@@ -29,7 +29,7 @@ module BlueStateDigital
       :addr1,:addr2,:city,:state_cd,:zip,:country,
       :phone,:email,
       :employer,:occupation,
-      :customFields
+      :custom_fields
     ]
     attr_accessor *FIELDS
 

@@ -21,7 +21,7 @@ describe BlueStateDigital::Contribution do
     :addr1,:addr2,:city,:state_cd,:zip,:country,
     :phone,:email,
     :employer,:occupation,
-    :customFields
+    :custom_fields
     ) }
 
   describe 'save' do
