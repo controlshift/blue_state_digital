@@ -1,5 +1,17 @@
 module BlueStateDigital
   class ApiDataModel
+    
+    class NoConnectionException < StandardError
+      def initialize
+        super("No connection available")
+      end
+    end
+    class FetchFailureException < StandardError
+      def initialize(msg)
+        super
+      end
+    end
+
     FIELD = nil
 
     attr_accessor :connection

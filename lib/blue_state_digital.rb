@@ -2,6 +2,8 @@ require 'openssl'
 require 'builder'
 require 'nokogiri'
 require 'active_support/core_ext'
+require 'active_model'
+require 'csv'
 require 'crack/xml'
 require 'faraday'
 require 'hashie'
@@ -18,6 +20,4 @@ require "blue_state_digital/constituent_group"
 require "blue_state_digital/event_type"
 require "blue_state_digital/event"
 require "blue_state_digital/event_rsvp"
-require "blue_state_digital/unstructured_data_model"
 require "blue_state_digital/dataset"
-require "blue_state_digital/list_datasets"
