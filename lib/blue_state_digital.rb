@@ -1,16 +1,9 @@
 require 'openssl'
 require 'builder'
 require 'nokogiri'
+require 'active_support/core_ext'
 require 'crack/xml'
 require 'faraday'
-
-# include only required active support dependencies
-require 'active_support'
-require 'active_support/core_ext/array/grouping.rb'
-require 'active_support/core_ext/object/blank.rb'
-require 'active_support/core_ext/numeric/time.rb'
-require 'active_support/core_ext/object/json.rb'
-require 'active_support/core_ext/string/conversions.rb'
 
 require "blue_state_digital/version" unless defined?(BlueStateDigital::VERSION)
 require "blue_state_digital/connection"
