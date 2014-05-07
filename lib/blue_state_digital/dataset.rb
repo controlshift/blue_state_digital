@@ -5,6 +5,7 @@ module BlueStateDigital
     include ActiveModel::Validations
 
     UPLOAD_ENDPOINT = '/cons/upload_dataset'
+    DELETE_ENDPOINT = '/cons/delete_dataset'
     FETCH_ENDPOINT = '/cons/list_datasets'
 
     FIELDS = [
@@ -58,6 +59,32 @@ module BlueStateDigital
         false
       end
     end
+
+
+    def delete
+      if dataset_id.nil?
+        errors.add(:dataset_id,"is missing") 
+        return false
+      end
+      if connection
+          response = connection.perform_request_raw( 
+            DELETE_ENDPOINT, 
+            {}, 
+            "POST",
+            {dataset_id: dataset_id}.to_json
+          )
+          if(response.status==200)
+            true
+          else
+            errors.add(:web_service,"#{response.body}")
+            false
+          end 
+        else
+          errors.add(:connection,"is missing")
+          false
+        end
+    end
+
     def find_all
       if connection
           response = connection.perform_request FETCH_ENDPOINT, {}, "GET"

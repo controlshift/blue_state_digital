@@ -71,7 +71,7 @@ describe BlueStateDigital::DatasetMap do
       before :each do
         connection
           .should_receive(:perform_request_raw)
-          .with('/cons/delete_dataset_map', {map_id: map_id}, 'POST')
+          .with('/cons/delete_dataset_map', {}, 'POST',delete_payload.to_json)
           .and_return(response)
       end
       context "failure" do

@@ -65,8 +65,9 @@ module BlueStateDigital
     	if connection
           response = connection.perform_request_raw( 
             DELETE_ENDPOINT, 
-            {map_id: map_id}, 
-            "POST"
+            {}, 
+            "POST",
+            {map_id: map_id}.to_json
           )
           if(response.status==200)
             true

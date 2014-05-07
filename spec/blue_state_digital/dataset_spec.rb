@@ -72,6 +72,42 @@ describe BlueStateDigital::Dataset do
     end
   end
 
+  describe "delete" do
+    context "validations" do
+      it "should complaing if map_id is not provided" do
+        subject.dataset_id = nil
+        subject.delete.should be false
+        subject.errors.full_messages.should == ["dataset_id is missing"]
+      end
+    end
+    context "service" do
+      let(:dataset_id) { 1 }
+      let(:delete_payload){ {dataset_id: dataset_id} }
+      before :each do
+        connection
+          .should_receive(:perform_request_raw)
+          .with('/cons/delete_dataset', {}, 'POST',delete_payload.to_json)
+          .and_return(response)
+      end
+      context "failure" do
+        let(:response) { Hashie::Mash.new(status: 404,body: "Something bad happened") }
+        it "should return false if delete fails" do
+          subject.dataset_id = dataset_id
+          subject.delete.should be_false
+          subject.errors.full_messages.should == ["web_service Something bad happened"]
+        end
+      end
+      context "success" do
+        let(:response) { Hashie::Mash.new(status: 200,body: "") }
+        it "should return true" do
+          subject.dataset_id = dataset_id
+          subject.delete.should be_true
+          subject.errors.full_messages.should == []
+        end
+      end
+    end
+  end
+
   describe "find all" do
     let(:dataset1) do
       {
