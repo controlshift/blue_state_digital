@@ -37,7 +37,7 @@ module BlueStateDigital
         if connection
           response = connection.perform_request_raw( 
             UPLOAD_ENDPOINT, 
-            {}, 
+            {:content_type=>"text/csv"}, 
             "POST", 
             csv_payload
           )

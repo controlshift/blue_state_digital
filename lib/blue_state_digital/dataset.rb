@@ -40,7 +40,7 @@ module BlueStateDigital
         if connection
           response = connection.perform_request_raw( 
             UPLOAD_ENDPOINT, 
-            {slug: slug, map_type: map_type}, 
+            {slug: slug, map_type: map_type,content_type: 'text/csv'}, 
             "POST", 
             csv_payload
           )
@@ -113,7 +113,7 @@ module BlueStateDigital
   class Datasets < CollectionResource
 
     FETCH_ENDPOINT = '/cons/list_datasets'
-    
+
     def get_datasets
       if connection
           response = connection.perform_request FETCH_ENDPOINT, {}, "GET"

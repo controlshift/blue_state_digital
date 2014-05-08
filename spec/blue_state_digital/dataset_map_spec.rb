@@ -37,7 +37,7 @@ describe BlueStateDigital::DatasetMap do
       before(:each) do
         connection
           .should_receive(:perform_request_raw)
-          .with('/cons/upload_dataset_map', {}, 'POST',csv)
+          .with('/cons/upload_dataset_map', {:content_type=>"text/csv"}, 'POST',csv)
           .and_return(response)
       end
       let(:response) { Hashie::Mash.new(status: 200,body: "successful") }
