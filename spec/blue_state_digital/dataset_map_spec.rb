@@ -93,7 +93,8 @@ describe BlueStateDigital::DatasetMap do
     end
   end
 
-  describe "find all" do
+  describe "get_dataset_maps" do
+    let(:connection) { BlueStateDigital::Connection.new({}) }
     let(:dataset_map1) do
       {
           map_id:1,
@@ -121,7 +122,7 @@ describe BlueStateDigital::DatasetMap do
         .and_return(response)
     end
     it "should fetch datasets" do
-      dataset_maps = subject.find_all
+      dataset_maps = connection.dataset_maps.get_dataset_maps
       dataset_maps.length.should == 2
       dataset_maps[0].to_json.should == dataset_map1.to_json
       dataset_maps[1].to_json.should == dataset_map2.to_json
@@ -129,7 +130,7 @@ describe BlueStateDigital::DatasetMap do
     context "failure" do
       let(:response) { "Something bad happened" }
       it "should raise exception if fetch fails" do
-        expect { subject.find_all }.to raise_error(BlueStateDigital::Dataset::FetchFailureException, "Something bad happened")
+        expect { connection.dataset_maps.get_dataset_maps }.to raise_error(BlueStateDigital::CollectionResource::FetchFailureException, "Something bad happened")
       end
     end
   end

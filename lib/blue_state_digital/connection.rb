@@ -4,7 +4,7 @@ module BlueStateDigital
     API_BASE = '/page/api'
     GRAPH_API_BASE = '/page/graph'
 
-    attr_reader :constituents, :constituent_groups, :datasets
+    attr_reader :constituents, :constituent_groups, :datasets, :dataset_maps
 
     def initialize(params = {})
       @api_id = params[:api_id]
@@ -63,6 +63,7 @@ module BlueStateDigital
        @constituents = BlueStateDigital::Constituents.new(self)
        @constituent_groups = BlueStateDigital::ConstituentGroups.new(self)
        @datasets = BlueStateDigital::Datasets.new(self)
+       @dataset_maps = BlueStateDigital::DatasetMaps.new(self)
     end
 
     def get_deferred_results(deferred_id)
