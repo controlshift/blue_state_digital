@@ -20,6 +20,7 @@ require "blue_state_digital/constituent_group"
 require "blue_state_digital/event_type"
 require "blue_state_digital/event"
 require "blue_state_digital/event_rsvp"
+require "blue_state_digital/contribution"
 require "blue_state_digital/dataset"
 require "blue_state_digital/dataset_map"
 
