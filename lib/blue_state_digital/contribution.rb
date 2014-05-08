@@ -62,5 +62,37 @@ module BlueStateDigital
       end
     end
   end
-
+  class Contributions < CollectionResource
+    class ContributionFetchFailureException < StandardError
+      def initialize(msg)
+        super
+      end
+    end
+    def get_contributions(filter={})
+      if connection
+        response = connection.wait_for_deferred_result(
+          connection.perform_request(
+            '/contribution/get_contributions', 
+            {:filter=>filter}, 
+            "GET"
+          ) 
+        )
+        contributions = []
+        begin
+          contributions = JSON.parse(response)  
+        rescue JSON::ParserError
+          raise ContributionFetchFailureException.new(response)
+        end
+        if(contributions)
+          contributions.map do |contribution|
+            Hashie::Mash.new(contribution)
+          end
+        else
+          ContributionFetchFailureException.new(response)
+        end
+      else
+        raise NoConnectionException.new
+      end
+    end
+  end
 end

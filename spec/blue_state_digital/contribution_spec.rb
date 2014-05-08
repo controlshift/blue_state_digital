@@ -113,4 +113,78 @@ describe BlueStateDigital::Contribution do
       end
     end
   end
+
+  describe 'get_contributions' do
+    let(:connection) { BlueStateDigital::Connection.new({}) }
+    let(:response) do
+          [ 
+            { 
+              "stg_contribution_id"=> 1, 
+              "cons_id"=> 1, 
+              "date"=> "2012-07-19 00:05:55", 
+              "contribution_key"=> "GdAzDC9hHwYaQlszcY", 
+              "ip_address"=> "127.0.0.1", 
+              "prefix"=> nil, 
+              "first_name"=> "John", 
+              "middle_name"=> nil, 
+              "last_name"=> "Doe", 
+              "suffix"=> nil, 
+              "email"=> "john@doe.com", 
+              "amount"=> "25.00", 
+              "tickets"=> nil, 
+              "occupation"=> nil, 
+              "employer"=> nil, 
+              "phone"=> 1238675309, 
+              "addr1"=> "123 First Ave", 
+              "addr2"=> nil, 
+              "city"=> "landville", 
+              "state_cd"=> "AA", 
+              "postal_code"=> "00000", 
+              "country"=> "AA", 
+              "card_type"=> "vs", 
+              "card_last_4"=> "0000", 
+              "custom1"=> nil, 
+              "custom2"=> nil, 
+              "custom3"=> nil, 
+              "source"=> ["somepage"], 
+              "custom_country_field1"=> nil, 
+              "custom_country_field2"=> nil, 
+              "bill_ref_num"=> "74B49741TE455931Y", 
+              "page_name"=> "General donation page", 
+              "note"=> nil, 
+              "outreach"=> nil, 
+              "ext_id"=> nil, 
+              "facebook"=> nil 
+            } 
+          ].to_json 
+    end
+    let(:filters) do
+      {
+        :date               => "custom",
+        :start              => "2012-07-19 00:05:55",
+        :type               => "all",
+        :source             => ["apple","banana"],
+        :contribution_pages =>  [1,2,3]
+      }  
+    end
+    context 'successful' do
+      it 'should fetch' do
+        connection.should_receive(:perform_request).with('/contribution/get_contributions', {:filter=>{}}, "GET").and_return("deferred_id")
+        connection.should_receive(:perform_request).with('/get_deferred_results', {deferred_id: "deferred_id"}, "GET").and_return(response)
+        contributions = connection.contributions.get_contributions
+        contributions.should_not be_nil
+        contributions.length.should == 1
+        contributions.to_json.should == response
+      end
+      it 'should support filters' do
+        connection.should_receive(:perform_request).with(
+          '/contribution/get_contributions', 
+          {:filter=>filters}, 
+          "GET"
+        ).and_return("deferred_id")
+        connection.should_receive(:perform_request).with('/get_deferred_results', {deferred_id: "deferred_id"}, "GET").and_return(response)
+        contributions = connection.contributions.get_contributions(filters)  
+      end
+    end
+  end
 end
