@@ -108,7 +108,8 @@ describe BlueStateDigital::Dataset do
     end
   end
 
-  describe "find all" do
+  describe "get_datasets" do
+    let(:connection) { BlueStateDigital::Connection.new({}) }
     let(:dataset1) do
       {
           dataset_id:42,
@@ -140,7 +141,7 @@ describe BlueStateDigital::Dataset do
         .and_return(response)
     end
     it "should fetch datasets" do
-      datasets = subject.find_all
+      datasets = connection.datasets.get_datasets
       datasets.length.should == 2
       datasets[0].to_json.should == dataset1.to_json
       datasets[1].to_json.should == dataset2.to_json
@@ -148,7 +149,7 @@ describe BlueStateDigital::Dataset do
     context "failure" do
       let(:response) { "Something bad happened" }
       it "should raise exception if fetch fails" do
-        expect { subject.find_all }.to raise_error(BlueStateDigital::Dataset::FetchFailureException, "Something bad happened")
+        expect { connection.datasets.get_datasets }.to raise_error(BlueStateDigital::CollectionResource::FetchFailureException, "Something bad happened")
       end
     end
   end

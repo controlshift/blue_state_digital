@@ -6,7 +6,6 @@ module BlueStateDigital
 
     UPLOAD_ENDPOINT = '/cons/upload_dataset'
     DELETE_ENDPOINT = '/cons/delete_dataset'
-    FETCH_ENDPOINT = '/cons/list_datasets'
 
     FIELDS = [
       :dataset_id,
@@ -85,26 +84,6 @@ module BlueStateDigital
         end
     end
 
-    def find_all
-      if connection
-          response = connection.perform_request FETCH_ENDPOINT, {}, "GET"
-          if(response.is_a?Hash)
-            data=response[:data]
-            if(data)
-              data.map do |dataset|
-                Dataset.new(dataset)
-              end
-            else
-              nil
-            end
-          else
-            raise FetchFailureException.new("#{response}")
-          end
-        else
-          raise NoConnectionException.new
-        end
-    end
-
     def read_attribute_for_validation(attr)
       send(attr)
     end
@@ -128,6 +107,31 @@ module BlueStateDigital
 
     def data_must_have_header
       errors.add(:data_header, "is missing") if !@data.blank? && @data_header.nil?  
+    end
+  end
+  
+  class Datasets < CollectionResource
+
+    FETCH_ENDPOINT = '/cons/list_datasets'
+    
+    def get_datasets
+      if connection
+          response = connection.perform_request FETCH_ENDPOINT, {}, "GET"
+          if(response.is_a?Hash)
+            data=response[:data]
+            if(data)
+              data.map do |dataset|
+                Dataset.new(dataset)
+              end
+            else
+              nil
+            end
+          else
+            raise FetchFailureException.new("#{response}")
+          end
+        else
+          raise NoConnectionException.new
+        end
     end
   end
 end
