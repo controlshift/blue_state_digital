@@ -4,7 +4,7 @@ module BlueStateDigital
     API_BASE = '/page/api'
     GRAPH_API_BASE = '/page/graph'
 
-    attr_reader :constituents, :constituent_groups
+    attr_reader :constituents, :constituent_groups, :contributions
 
     def initialize(params = {})
       @api_id = params[:api_id]
@@ -23,13 +23,13 @@ module BlueStateDigital
         @client.post do |req|
           content_type = params.delete(:content_type) || 'application/x-www-form-urlencoded'
           accept = params.delete(:accept) || 'text/xml'
-          req.url(path, extended_params(path, params))
+          req.url("#{path}?#{extended_params(path, params).to_query}")
           req.body = body
           req.headers['Content-Type'] = content_type
           req.headers['Accept'] = accept
         end.body
       else
-        @client.get(path, extended_params(path, params)).body
+        @client.get("#{path}?#{extended_params(path, params).to_query}").body
       end
     end
 
@@ -44,7 +44,7 @@ module BlueStateDigital
     end
 
     def compute_hmac(path, api_ts, params)
-      signing_string = [@api_id, api_ts, path, params.map { |k,v| "#{k.to_s}=#{v.to_s}" }.join('&')].join("\n")
+      signing_string = [@api_id, api_ts, path, URI.unescape(params.to_query)].join("\n")
       OpenSSL::HMAC.hexdigest('sha1', @api_secret, signing_string)
     end
 
@@ -58,6 +58,7 @@ module BlueStateDigital
     def set_up_resources # :doc:
        @constituents = BlueStateDigital::Constituents.new(self)
        @constituent_groups = BlueStateDigital::ConstituentGroups.new(self)
+       @contributions = BlueStateDigital::Contributions.new(self)
     end
 
     def get_deferred_results(deferred_id)

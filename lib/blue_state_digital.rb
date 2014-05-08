@@ -6,6 +6,7 @@ require 'active_support/dependencies/autoload'
 require 'active_support/core_ext'
 require 'crack/xml'
 require 'faraday'
+require 'hashie'
 
 require "blue_state_digital/version" unless defined?(BlueStateDigital::VERSION)
 require "blue_state_digital/connection"
