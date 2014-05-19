@@ -4,7 +4,7 @@ module BlueStateDigital
     API_BASE = '/page/api'
     GRAPH_API_BASE = '/page/graph'
 
-    attr_reader :constituents, :constituent_groups
+    attr_reader :constituents, :constituent_groups, :datasets, :dataset_maps
 
     def initialize(params = {})
       @api_id = params[:api_id]
@@ -18,6 +18,10 @@ module BlueStateDigital
     end
 
     def perform_request(call, params = {}, method = "GET", body = nil)
+      perform_request_raw(call,params,method,body).body 
+    end
+
+    def perform_request_raw(call, params = {}, method = "GET", body = nil)
       path = API_BASE + call
       if method == "POST"
         @client.post do |req|
@@ -27,11 +31,11 @@ module BlueStateDigital
           req.body = body
           req.headers['Content-Type'] = content_type
           req.headers['Accept'] = accept
-        end.body
+        end
       else
-        @client.get(path, extended_params(path, params)).body
+        @client.get(path, extended_params(path, params))
       end
-    end
+    end 
 
     def perform_graph_request(call, params, method = 'POST')
       path = GRAPH_API_BASE + call
@@ -58,6 +62,8 @@ module BlueStateDigital
     def set_up_resources # :doc:
        @constituents = BlueStateDigital::Constituents.new(self)
        @constituent_groups = BlueStateDigital::ConstituentGroups.new(self)
+       @datasets = BlueStateDigital::Datasets.new(self)
+       @dataset_maps = BlueStateDigital::DatasetMaps.new(self)
     end
 
     def get_deferred_results(deferred_id)

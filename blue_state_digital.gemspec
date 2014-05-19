@@ -28,8 +28,10 @@ Gem::Specification.new do |s|
   s.add_development_dependency "pry-debugger"
   s.add_development_dependency "rb-fsevent"
   s.add_dependency "activesupport"
+  s.add_dependency "activemodel"
   s.add_dependency "faraday", '0.8.9'
   s.add_dependency "builder"
   s.add_dependency "nokogiri"
   s.add_dependency "crack"
+  s.add_dependency "hashie"
 end
