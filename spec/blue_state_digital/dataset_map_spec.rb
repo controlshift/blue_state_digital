@@ -2,10 +2,10 @@ require 'spec_helper'
 
 describe BlueStateDigital::DatasetMap do
 
-  let(:connection) { double } 
+  let(:connection) { double }
   let(:dataset_map_attributes) do
     {
-    } 
+    }
   end
   subject { BlueStateDigital::DatasetMap.new(dataset_map_attributes.merge({connection: connection}))}
 
@@ -14,7 +14,7 @@ describe BlueStateDigital::DatasetMap do
       dataset = BlueStateDigital::Dataset.new(dataset_map_attributes)
       dataset_map_attributes.each do |k,v|
         dataset.send(k).should == v
-      end 
+      end
     end
   end
 
@@ -33,11 +33,11 @@ describe BlueStateDigital::DatasetMap do
     context "csv upload" do
       let(:header) { ['a','b','c','d'] }
       let(:row1) { ['1','2','3','4'] }
-      let(:csv) { "#{header.join(',')}\n#{row1.join(',')}\n"}    
+      let(:csv) { "#{header.join(',')}\n#{row1.join(',')}\n"}
       before(:each) do
         connection
           .should_receive(:perform_request_raw)
-          .with('/cons/upload_dataset_map', {:content_type=>"text/csv"}, 'POST',csv)
+          .with('/cons/upload_dataset_map', {api_ver: 2, content_type: "text/csv"}, 'POST',csv)
           .and_return(response)
       end
       let(:response) { Hashie::Mash.new(status: 200,body: "successful") }
@@ -45,7 +45,7 @@ describe BlueStateDigital::DatasetMap do
         subject.add_data_header(header)
         subject.add_data_row(row1)
         subject.save.should be_true
-      end  
+      end
       context "failure" do
         let(:response) { Hashie::Mash.new(status: 404,body: "Something bad happened") }
         it "should return false if save fails" do
@@ -71,7 +71,7 @@ describe BlueStateDigital::DatasetMap do
       before :each do
         connection
           .should_receive(:perform_request_raw)
-          .with('/cons/delete_dataset_map', {}, 'POST',delete_payload.to_json)
+          .with('/cons/delete_dataset_map', {api_ver: 2}, 'POST',delete_payload.to_json)
           .and_return(response)
       end
       context "failure" do
@@ -106,19 +106,19 @@ describe BlueStateDigital::DatasetMap do
           map_id:2,
           type:"downballot"
       }
-    end  
-    let(:response) do 
+    end
+    let(:response) do
       {
       data:[
         dataset_map1,
-        dataset_map2  
+        dataset_map2
       ]
-    } 
+    }
     end
     before :each do
       connection
         .should_receive(:perform_request)
-        .with('/cons/list_dataset_maps', {}, 'GET')
+        .with('/cons/list_dataset_maps', {api_ver: 2}, 'GET')
         .and_return(response)
     end
     it "should fetch datasets" do

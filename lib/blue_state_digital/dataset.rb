@@ -38,10 +38,10 @@ module BlueStateDigital
       #errors.add(:data, "cannot be blank") if @data.blank?
       if valid?
         if connection
-          response = connection.perform_request_raw( 
-            UPLOAD_ENDPOINT, 
-            {slug: slug, map_type: map_type,content_type: 'text/csv'}, 
-            "POST", 
+          response = connection.perform_request_raw(
+            UPLOAD_ENDPOINT,
+            {slug: slug, map_type: map_type,content_type: 'text/csv'},
+            "POST",
             csv_payload
           )
           if(response.status==200)
@@ -49,7 +49,7 @@ module BlueStateDigital
           else
             errors.add(:web_service,"#{response.body}")
             false
-          end 
+          end
         else
           errors.add(:connection,"is missing")
           false
@@ -62,13 +62,13 @@ module BlueStateDigital
 
     def delete
       if dataset_id.nil?
-        errors.add(:dataset_id,"is missing") 
+        errors.add(:dataset_id,"is missing")
         return false
       end
       if connection
-          response = connection.perform_request_raw( 
-            DELETE_ENDPOINT, 
-            {}, 
+          response = connection.perform_request_raw(
+            DELETE_ENDPOINT,
+            {},
             "POST",
             {dataset_id: dataset_id}.to_json
           )
@@ -77,7 +77,7 @@ module BlueStateDigital
           else
             errors.add(:web_service,"#{response.body}")
             false
-          end 
+          end
         else
           errors.add(:connection,"is missing")
           false
@@ -92,8 +92,8 @@ module BlueStateDigital
     end
     def self.lookup_ancestors
       [self]
-    end  
-    
+    end
+
     private
 
     def csv_payload
@@ -106,17 +106,17 @@ module BlueStateDigital
     end
 
     def data_must_have_header
-      errors.add(:data_header, "is missing") if !@data.blank? && @data_header.nil?  
+      errors.add(:data_header, "is missing") if !@data.blank? && @data_header.nil?
     end
   end
-  
+
   class Datasets < CollectionResource
 
     FETCH_ENDPOINT = '/cons/list_datasets'
 
     def get_datasets
       if connection
-          response = connection.perform_request FETCH_ENDPOINT, {}, "GET"
+          response = connection.perform_request FETCH_ENDPOINT, { api_ver: 2 }, "GET"
           if(response.is_a?Hash)
             data=response[:data]
             if(data)

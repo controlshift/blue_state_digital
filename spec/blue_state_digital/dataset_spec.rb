@@ -3,15 +3,15 @@ require 'spec_helper'
 describe BlueStateDigital::Dataset do
 
   let(:connection) { double }
-  let(:slug) { "my_dataset" } 
-  let(:map_type) { "state" } 
+  let(:slug) { "my_dataset" }
+  let(:map_type) { "state" }
   let(:dataset_attributes) do
     {
       "dataset_id"  =>  42,
       "slug"        =>  slug,
       "rows"        =>  100,
       "map_type"    =>  map_type
-    } 
+    }
   end
   subject { BlueStateDigital::Dataset.new(dataset_attributes.merge({connection: connection}))}
 
@@ -20,7 +20,7 @@ describe BlueStateDigital::Dataset do
       dataset = BlueStateDigital::Dataset.new(dataset_attributes)
       dataset_attributes.each do |k,v|
         dataset.send(k).should == v
-      end 
+      end
     end
   end
 
@@ -48,7 +48,7 @@ describe BlueStateDigital::Dataset do
     context "csv upload" do
       let(:header) { ['a','b','c','d'] }
       let(:row1) { ['1','2','3','4'] }
-      let(:csv) { "#{header.join(',')}\n#{row1.join(',')}\n"}    
+      let(:csv) { "#{header.join(',')}\n#{row1.join(',')}\n"}
       before(:each) do
         connection
           .should_receive(:perform_request_raw)
@@ -60,7 +60,7 @@ describe BlueStateDigital::Dataset do
         subject.add_data_header(header)
         subject.add_data_row(row1)
         subject.save.should be_true
-      end  
+      end
       context "failure" do
         let(:response) { Hashie::Mash.new(status: 404,body: "Something bad happened") }
         it "should return false if save fails" do
@@ -125,19 +125,19 @@ describe BlueStateDigital::Dataset do
           slug:"downballot_dataset",
           rows:50,
       }
-    end  
-    let(:response) do 
+    end
+    let(:response) do
       {
       data:[
         dataset1,
-        dataset2  
+        dataset2
       ]
-    } 
+    }
     end
     before :each do
       connection
         .should_receive(:perform_request)
-        .with('/cons/list_datasets', {}, 'GET')
+        .with('/cons/list_datasets', { api_ver: 2 }, 'GET')
         .and_return(response)
     end
     it "should fetch datasets" do

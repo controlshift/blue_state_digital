@@ -22,23 +22,27 @@ module BlueStateDigital
       @data_header = nil
       @errors = ActiveModel::Errors.new(self)
     end
+
     def data
       @data
     end
+
     def add_data_row(row)
       @data.push row
     end
+
     def add_data_header(header_row)
       @data_header = header_row
     end
+
     def save
       #errors.add(:data, "cannot be blank") if @data.blank?
       if valid?
         if connection
-          response = connection.perform_request_raw( 
-            UPLOAD_ENDPOINT, 
-            {:content_type=>"text/csv"}, 
-            "POST", 
+          response = connection.perform_request_raw(
+            UPLOAD_ENDPOINT,
+            { api_ver: 2, content_type: "text/csv" },
+            "POST",
             csv_payload
           )
           if(response.status==200)
@@ -46,7 +50,7 @@ module BlueStateDigital
           else
             errors.add(:web_service,"#{response.body}")
             false
-          end 
+          end
         else
           errors.add(:connection,"is missing")
           false
@@ -58,13 +62,13 @@ module BlueStateDigital
 
     def delete
     	if map_id.nil?
-    		errors.add(:map_id,"is missing") 
+    		errors.add(:map_id,"is missing")
     		return false
     	end
     	if connection
-          response = connection.perform_request_raw( 
-            DELETE_ENDPOINT, 
-            {}, 
+          response = connection.perform_request_raw(
+            DELETE_ENDPOINT,
+            { api_ver: 2 },
             "POST",
             {map_id: map_id}.to_json
           )
@@ -73,7 +77,7 @@ module BlueStateDigital
           else
             errors.add(:web_service,"#{response.body}")
             false
-          end 
+          end
         else
           errors.add(:connection,"is missing")
           false
@@ -88,8 +92,8 @@ module BlueStateDigital
     end
     def self.lookup_ancestors
       [self]
-    end  
-    
+    end
+
     private
 
     def csv_payload
@@ -102,7 +106,7 @@ module BlueStateDigital
     end
 
     def data_must_have_header
-      errors.add(:data_header, "is missing") if !@data.blank? && @data_header.nil?  
+      errors.add(:data_header, "is missing") if !@data.blank? && @data_header.nil?
     end
   end
 
@@ -110,7 +114,7 @@ module BlueStateDigital
     FETCH_ENDPOINT = '/cons/list_dataset_maps'
     def get_dataset_maps
       if connection
-          response = connection.perform_request FETCH_ENDPOINT, {}, "GET"
+          response = connection.perform_request FETCH_ENDPOINT, { api_ver: 2 }, "GET"
           if(response.is_a?Hash)
             data=response[:data]
             if(data)
