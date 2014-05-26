@@ -114,22 +114,25 @@ module BlueStateDigital
     FETCH_ENDPOINT = '/cons/list_dataset_maps'
     def get_dataset_maps
       if connection
-          response = connection.perform_request FETCH_ENDPOINT, { api_ver: 2 }, "GET"
-          if(response.is_a?Hash)
-            data=response[:data]
-            if(data)
-              data.map do |dataset|
-                DatasetMap.new(dataset)
-              end
-            else
-              nil
+        response = connection.perform_request FETCH_ENDPOINT, { api_ver: 2 }, "GET"
+        # TODO: Should check response's status code
+        begin
+          parsed_response = JSON.parse(response)
+
+          data = parsed_response['data']
+          if(data)
+            data.map do |dataset|
+              DatasetMap.new(dataset)
             end
           else
-            raise FetchFailureException.new("#{response}")
+            nil
           end
-        else
-          raise NoConnectionException.new
+        rescue Exception => e
+          raise FetchFailureException.new("#{e}")
         end
+      else
+        raise NoConnectionException.new
+      end
     end
   end
 end

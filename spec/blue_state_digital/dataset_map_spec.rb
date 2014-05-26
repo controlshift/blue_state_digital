@@ -109,11 +109,11 @@ describe BlueStateDigital::DatasetMap do
     end
     let(:response) do
       {
-      data:[
-        dataset_map1,
-        dataset_map2
-      ]
-    }
+        data:[
+          dataset_map1,
+          dataset_map2
+        ]
+      }.to_json
     end
     before :each do
       connection
@@ -130,7 +130,7 @@ describe BlueStateDigital::DatasetMap do
     context "failure" do
       let(:response) { "Something bad happened" }
       it "should raise exception if fetch fails" do
-        expect { connection.dataset_maps.get_dataset_maps }.to raise_error(BlueStateDigital::CollectionResource::FetchFailureException, "Something bad happened")
+        expect { connection.dataset_maps.get_dataset_maps }.to raise_error(BlueStateDigital::CollectionResource::FetchFailureException)
       end
     end
   end
