@@ -58,7 +58,7 @@ describe BlueStateDigital::Dataset do
       before(:each) do
         connection
           .should_receive(:perform_request_raw)
-          .with('/cons/upload_dataset', {slug: slug,map_type: map_type,:content_type=>"text/csv"}, 'POST',csv)
+          .with('/cons/upload_dataset', {api_ver: 2, slug: slug,map_type: map_type,:content_type=>"text/csv"}, 'POST',csv)
           .and_return(response)
       end
 
@@ -97,7 +97,7 @@ describe BlueStateDigital::Dataset do
       before :each do
         connection
           .should_receive(:perform_request_raw)
-          .with('/cons/delete_dataset', {}, 'POST',delete_payload.to_json)
+          .with('/cons/delete_dataset', {api_ver: 2}, 'POST',delete_payload.to_json)
           .and_return(response)
       end
 

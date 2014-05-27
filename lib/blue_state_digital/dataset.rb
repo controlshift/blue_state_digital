@@ -40,7 +40,7 @@ module BlueStateDigital
         if connection
           response = connection.perform_request_raw(
             UPLOAD_ENDPOINT,
-            {slug: slug, map_type: map_type,content_type: 'text/csv'},
+            {api_ver: 2, slug: slug, map_type: map_type,content_type: 'text/csv'},
             "POST",
             csv_payload
           )
@@ -68,7 +68,7 @@ module BlueStateDigital
       if connection
           response = connection.perform_request_raw(
             DELETE_ENDPOINT,
-            {},
+            {api_ver: 2},
             "POST",
             {dataset_id: dataset_id}.to_json
           )
