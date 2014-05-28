@@ -42,7 +42,7 @@ module BlueStateDigital
           response = connection.perform_request_raw(
             UPLOAD_ENDPOINT,
             { api_ver: 2, content_type: "text/csv" },
-            "POST",
+            "PUT",
             csv_payload
           )
           if(response.status==200)
