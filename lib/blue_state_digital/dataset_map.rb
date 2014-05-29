@@ -45,7 +45,7 @@ module BlueStateDigital
             "PUT",
             csv_payload
           )
-          if(response.status==200)
+          if(response.status == 202)
             true
           else
             errors.add(:web_service,"#{response.body}")

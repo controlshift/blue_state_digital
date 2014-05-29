@@ -53,7 +53,7 @@ describe BlueStateDigital::Dataset do
       let(:header) { ['a','b','c','d'] }
       let(:row1) { ['1','2','3','4'] }
       let(:csv) { "#{header.join(',')}\n#{row1.join(',')}\n"}
-      let(:response) { Hashie::Mash.new(status: 200,body: "successful") }
+      let(:response) { Hashie::Mash.new(status: 202, body: "accepted") }
 
       before(:each) do
         connection

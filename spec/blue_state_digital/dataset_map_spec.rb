@@ -40,7 +40,7 @@ describe BlueStateDigital::DatasetMap do
           .with('/cons/upload_dataset_map', { api_ver: 2, content_type: "text/csv", accept: "application/json" }, 'PUT',csv)
           .and_return(response)
       end
-      let(:response) { Hashie::Mash.new(status: 200,body: "successful") }
+      let(:response) { Hashie::Mash.new(status: 202,body: "accepted") }
       it "should convert data into csv and dispatch" do
         subject.add_data_header(header)
         subject.add_data_row(row1)
