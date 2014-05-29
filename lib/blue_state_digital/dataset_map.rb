@@ -41,7 +41,7 @@ module BlueStateDigital
         if connection
           response = connection.perform_request_raw(
             UPLOAD_ENDPOINT,
-            { api_ver: 2, content_type: "text/csv" },
+            { api_ver: 2, content_type: "text/csv", accept: 'application/json' },
             "PUT",
             csv_payload
           )

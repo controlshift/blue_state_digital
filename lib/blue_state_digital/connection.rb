@@ -18,13 +18,13 @@ module BlueStateDigital
     end
 
     def perform_request(call, params = {}, method = "GET", body = nil)
-      perform_request_raw(call,params,method,body).body 
+      perform_request_raw(call,params,method,body).body
     end
 
     def perform_request_raw(call, params = {}, method = "GET", body = nil)
       path = API_BASE + call
-      if method == "POST"
-        @client.post do |req|
+      if method == "POST" || method == "PUT"
+        @client.send(method.downcase.to_sym) do |req|
           content_type = params.delete(:content_type) || 'application/x-www-form-urlencoded'
           accept = params.delete(:accept) || 'text/xml'
           req.url(path, extended_params(path, params))
@@ -35,7 +35,7 @@ module BlueStateDigital
       else
         @client.get(path, extended_params(path, params))
       end
-    end 
+    end
 
     def perform_graph_request(call, params, method = 'POST')
       path = GRAPH_API_BASE + call

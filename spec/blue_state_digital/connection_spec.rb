@@ -61,6 +61,26 @@ describe BlueStateDigital::Connection do
       end
     end
 
+    it "should perform PUT request" do
+      timestamp = Time.now
+      Timecop.freeze(timestamp) do
+        api_call = '/somemethod'
+        api_ts = timestamp.utc.to_i.to_s
+        api_mac = connection.compute_hmac("/page/api#{api_call}", api_ts, { api_ver: '1', api_id: api_id, api_ts: api_ts })
+
+        stub_url = "https://#{api_host}/page/api/somemethod?api_id=#{api_id}&api_mac=#{api_mac}&api_ts=#{api_ts}&api_ver=1"
+        stub_request(:put, stub_url).with do |request|
+          request.body.should == "a=b"
+          request.headers['Accept'].should == 'text/xml'
+          request.headers['Content-Type'].should == 'application/x-www-form-urlencoded'
+          true
+        end.to_return(body: "body")
+
+        response = connection.perform_request(api_call, params = {}, method = "PUT", body = "a=b")
+        response.should == "body"
+      end
+    end
+
     it "should perform GET request" do
       timestamp = Time.now
       Timecop.freeze(timestamp) do

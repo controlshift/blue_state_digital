@@ -58,7 +58,7 @@ describe BlueStateDigital::Dataset do
       before(:each) do
         connection
           .should_receive(:perform_request_raw)
-          .with('/cons/upload_dataset', {api_ver: 2, slug: slug,map_type: map_type,:content_type=>"text/csv"}, 'PUT',csv)
+          .with('/cons/upload_dataset', { api_ver: 2, slug: slug,map_type: map_type, content_type: "text/csv", accept: "application/json" }, 'PUT',csv)
           .and_return(response)
       end
 
