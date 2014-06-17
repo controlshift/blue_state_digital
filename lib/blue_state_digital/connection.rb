@@ -58,9 +58,10 @@ module BlueStateDigital
       # Find out which one is in use or select default
       params_encoder = @client.options.params_encoder || Faraday::Utils.default_params_encoder
 
-      # Call that params_encoder when creating signing string
-      signing_string = [@api_id, api_ts, path, params_encoder.encode(params)].join("\n")
+      # Call that params_encoder when creating signing string. Note we must unescape for BSD
+      signing_string = [@api_id, api_ts, path, URI.unescape(params_encoder.encode(params))].join("\n")
 
+      puts "signing string " + signing_string
       OpenSSL::HMAC.hexdigest('sha1', @api_secret, signing_string)
 
     end
