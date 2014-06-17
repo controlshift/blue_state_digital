@@ -71,7 +71,6 @@ module BlueStateDigital
 
        signing_string = [@api_id, api_ts, path, canon_params].join("\n")
 
-       puts "signing string " + signing_string
        OpenSSL::HMAC.hexdigest('sha1', @api_secret, signing_string)
 
     end
