@@ -106,7 +106,7 @@ module BlueStateDigital
     end
 
     def get_constituents(filter, bundles = 'cons_group')
-      result = connection.wait_for_deferred_result( connection.perform_request('/cons/get_constituents', {:filter => filter, :bundles=> bundles}, "GET") )
+      result = connection.wait_for_deferred_result( connection.perform_request('/cons/get_constituents', {:filter => filter, :bundles=> bundles.join(',')}, "GET") )
 
       from_response(result)
     end
