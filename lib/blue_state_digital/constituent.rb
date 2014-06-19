@@ -95,7 +95,7 @@ module BlueStateDigital
   end
 
   class Constituents < CollectionResource
-    def get_constituents_by_email email, bundles='cons_group'
+    def get_constituents_by_email email, bundles= [ 'cons_group' ]
       get_constituents "email=#{email}", bundles
     end
 
@@ -105,7 +105,7 @@ module BlueStateDigital
       from_response(connection.perform_request('/cons/get_constituents_by_id', {:cons_ids => cons_ids_concat, :bundles=> bundles.join(',')}, "GET"))
     end
 
-    def get_constituents(filter, bundles = 'cons_group')
+    def get_constituents(filter, bundles = [ 'cons_group' ])
       result = connection.wait_for_deferred_result( connection.perform_request('/cons/get_constituents', {:filter => filter, :bundles=> bundles.join(',')}, "GET") )
 
       from_response(result)

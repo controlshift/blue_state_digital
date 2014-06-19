@@ -265,7 +265,7 @@ describe BlueStateDigital::Constituent do
         bundles = 'cons_addr'
         connection.should_receive(:perform_request).with('/cons/get_constituents', {:filter=>"email=george@washington.com", :bundles => bundles}, "GET").and_return("deferred_id")
         connection.should_receive(:perform_request).with('/get_deferred_results', {deferred_id: "deferred_id"}, "GET").and_return(@constituent_with_addr)
-        response = connection.constituents.get_constituents_by_email("george@washington.com", bundles).first
+        response = connection.constituents.get_constituents_by_email("george@washington.com", ['cons_addr']).first
         response.addresses[0].addr1 == "aaa1"
         response.addresses[0].addr2 == "aaa2"
       end
