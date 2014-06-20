@@ -49,8 +49,31 @@ module BlueStateDigital
     end
 
     def compute_hmac(path, api_ts, params)
-      signing_string = [@api_id, api_ts, path, params.map { |k,v| "#{k.to_s}=#{v.to_s}" }.join('&')].join("\n")
-      OpenSSL::HMAC.hexdigest('sha1', @api_secret, signing_string)
+      # Support Faraday 0.9.0 forward
+      # Faraday now normalizes request parameters via sorting by default but also allows
+      # the params encoder to be configured by client.  It includes Faraday::NestedParamsEncoder
+      # and Faraday::FlatParamsEncoder, but a 3rd party one can be provided.
+      #
+      # When computing the hmac, we need to normalize/sort the exact same way.
+
+       if Faraday::VERSION == "0.8.9"
+         # do it the old way
+         canon_params= params.map { |k, v| "#{k.to_s}=#{v.to_s}" }.join('&')
+
+       else  # 0.9.0+ do it the new way
+
+         # Find out which one is in use or select default
+         params_encoder = @client.options[:params_encoder] || Faraday::Utils.default_params_encoder
+
+         # Call that params_encoder when creating signing string. Note we must unescape for BSD
+         canon_params = URI.unescape(params_encoder.encode(params))
+
+       end
+
+       signing_string = [@api_id, api_ts, path, canon_params].join("\n")
+
+       OpenSSL::HMAC.hexdigest('sha1', @api_secret, signing_string)
+
     end
 
     def extended_params(path, params)
