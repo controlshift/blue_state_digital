@@ -19,14 +19,3 @@ def fixture(file)
   File.new(File.join(fixture_path, '/', file))
 end
 
-class TrueClass
-  def true?
-    self == true
-  end
-end
-
-class FalseClass
-  def false?
-    self == false
-  end
-end
