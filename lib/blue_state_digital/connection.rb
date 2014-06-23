@@ -63,7 +63,14 @@ module BlueStateDigital
        else  # 0.9.0+ do it the new way
 
          # Find out which one is in use or select default
-         params_encoder = @client.options[:params_encoder] || Faraday::Utils.default_params_encoder
+         begin
+           params_encoder = @client.options[:params_encoder] || Faraday::Utils.default_params_encoder
+         rescue Exception => e
+           # This wackiness is for the tests.
+           # when using mocks, there is no @client.options, so we catch the exception and force the default encoder
+           params_encoder = Faraday::Utils.default_params_encoder
+         end
+
 
          # Call that params_encoder when creating signing string. Note we must unescape for BSD
          canon_params = URI.unescape(params_encoder.encode(params))
