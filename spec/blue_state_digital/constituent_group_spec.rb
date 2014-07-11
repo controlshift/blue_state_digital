@@ -205,6 +205,19 @@ xml_string
       connection.constituent_groups.send(method.to_sym, cons_group_id, cons_ids)
     end
 
+    it "should batch on #{operation} constituent ids to group" do
+      stub_const('BlueStateDigital::ConstituentGroups::CONSTITUENTS_BATCH_SIZE', 2)
+
+      cons_group_id = "12"
+      cons_ids = ["1", "2", "3", "4"]
+
+      connection.should_receive(:perform_request).with("/cons_group/#{method}", { cons_group_id: cons_group_id, cons_ids: "1,2" }, "POST").and_return("deferred_id")
+      connection.should_receive(:perform_request).with("/cons_group/#{method}", { cons_group_id: cons_group_id, cons_ids: "3,4" }, "POST").and_return("deferred_id")
+      connection.should_receive(:perform_request).with('/get_deferred_results', {deferred_id: "deferred_id"}, "GET").twice.and_return(true)
+
+      connection.constituent_groups.send(method.to_sym, cons_group_id, cons_ids)
+    end
+
     it "should not wait for the result if told not to" do
       cons_group_id = "12"
       cons_ids = ["1", "2"]
@@ -227,6 +240,7 @@ xml_string
       connection.constituent_groups.send(method.to_sym, cons_group_id, cons_ids)
     end
   end
+
 
   it "should rename the constituent group" do
     connection.should_receive(:perform_request).with('/cons_group/rename_group', {cons_group_id: "1", new_name: "foo"}, "POST").and_return("")

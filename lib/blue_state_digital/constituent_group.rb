@@ -19,6 +19,8 @@ module BlueStateDigital
   end
 
   class ConstituentGroups < CollectionResource
+    CONSTITUENTS_BATCH_SIZE = 100
+
     def add_cons_ids_to_group(cons_group_id, cons_ids, options = {wait_for_result: true})
       add_or_remove_cons_ids_from_group(:add, cons_group_id, cons_ids, options)
     end
@@ -135,8 +137,8 @@ module BlueStateDigital
               end
       cons_ids = cons_ids.is_a?(Array) ? cons_ids : [cons_ids]
 
-      cons_ids.in_groups_of(100) do
-        cons_ids_concat = cons_ids.join(',')
+      cons_ids.in_groups_of(CONSTITUENTS_BATCH_SIZE, false) do |batched_cons_ids|
+        cons_ids_concat = batched_cons_ids.join(',')
         post_params = { cons_group_id: cons_group_id, cons_ids: cons_ids_concat }
         if options[:wait_for_result]
           connection.wait_for_deferred_result( connection.perform_request "/cons_group/#{method}", post_params, "POST" )
