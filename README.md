@@ -1,5 +1,7 @@
 # Blue State Digital Gem
 
+[![Build Status](https://travis-ci.org/controlshift/blue_state_digital.svg?branch=master)](https://travis-ci.org/controlshift/blue_state_digital)
+
 ## Usage
 
 ```ruby
