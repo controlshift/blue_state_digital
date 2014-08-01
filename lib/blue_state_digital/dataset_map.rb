@@ -127,7 +127,7 @@ module BlueStateDigital
           else
             nil
           end
-        rescue Exception => e
+        rescue StandardError => e
           raise FetchFailureException.new("#{e}")
         end
       else
