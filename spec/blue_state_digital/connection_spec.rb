@@ -121,7 +121,15 @@ describe BlueStateDigital::Connection do
   describe "#compute_hmac" do
     it "should compute proper hmac hash" do
       params = { api_ver: '1', api_id: api_id, api_ts: '1272659462' }
-      connection.compute_hmac('/page/api/circle/list_circles', '1272659462', params).should == '13e9de81bbdda506b6021579da86d3b6edea9755'
+      hmac = connection.compute_hmac('/page/api/circle/list_circles', '1272659462', params)
+
+      # correctly test for new Faraday 0.9.0 param canonization
+      if Faraday::VERSION == '0.8.9'
+        hmac.should ==  '13e9de81bbdda506b6021579da86d3b6edea9755'
+      else # Faraday 0.9.0 +
+        hmac.should == '88c7f0739a173af732736e6dc1bd97f237e23863'
+      end
+
     end
   end
 end
