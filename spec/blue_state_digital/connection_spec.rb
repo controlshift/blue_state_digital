@@ -31,7 +31,7 @@ describe BlueStateDigital::Connection do
       end
 
       it "should override Content-Type with param" do
-        faraday_client = double(request: nil, response: nil, adapter: nil)
+        faraday_client = double(request: nil, response: nil, adapter: nil, options: {})
         headers = {}
         post_request = double(headers: headers, body: '', url: nil)
         post_request.stub(:body=)
@@ -46,7 +46,7 @@ describe BlueStateDigital::Connection do
       end
 
       it "should override Accept with param" do
-        faraday_client = double(request: nil, response: nil, adapter: nil)
+        faraday_client = double(request: nil, response: nil, adapter: nil, options: {})
         headers = {}
         post_request = double(headers: headers, body: '', url: nil)
         post_request.stub(:body=)
@@ -120,8 +120,8 @@ describe BlueStateDigital::Connection do
 
   describe "#compute_hmac" do
     it "should compute proper hmac hash" do
-      params = { api_ver: '1', api_id: api_id, api_ts: '1272659462' }
-      connection.compute_hmac('/page/api/circle/list_circles', '1272659462', params).should == '13e9de81bbdda506b6021579da86d3b6edea9755'
+      params = { api_id: api_id, api_ts: '1272659462', api_ver: '1' }
+      connection.compute_hmac('/page/api/circle/list_circles', '1272659462', params).should == '88c7f0739a173af732736e6dc1bd97f237e23863'
     end
   end
 end
