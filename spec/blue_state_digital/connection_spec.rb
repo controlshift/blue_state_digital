@@ -8,6 +8,25 @@ describe BlueStateDigital::Connection do
   let(:api_secret) { '7405d35963605dc36702c06314df85db7349613f' }
   let(:connection) { BlueStateDigital::Connection.new({host: api_host, api_id: api_id, api_secret: api_secret})}
 
+  if Faraday::VERSION != "0.8.9"
+    describe '#compute_hmac' do
+      it "should not escape whitespaces on params" do
+        timestamp = Time.parse('2014-01-01 00:00:00 +0000')
+        Timecop.freeze(timestamp) do
+          api_call = '/somemethod'
+          api_ts = timestamp.utc.to_i.to_s
+          OpenSSL::HMAC.should_receive(:hexdigest) do |digest, key, data|
+            digest.should == 'sha1'
+            key.should == api_secret
+            data.should =~ /name=string with multiple whitespaces/
+          end
+
+          api_mac = connection.compute_hmac("/page/api#{api_call}", api_ts, { api_ver: '1', api_id: api_id, api_ts: api_ts, name: 'string with multiple whitespaces' })
+        end
+      end
+    end
+  end
+
   describe "#perform_request" do
     context 'POST' do
       it "should perform POST request" do

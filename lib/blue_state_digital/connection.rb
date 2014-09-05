@@ -66,10 +66,9 @@ module BlueStateDigital
          params_encoder = @client.options[:params_encoder] || Faraday::Utils.default_params_encoder
 
          # Call that params_encoder when creating signing string. Note we must unescape for BSD
-         canon_params = URI.unescape(params_encoder.encode(params))
+         canon_params = URI.decode_www_form_component(params_encoder.encode(params))
 
        end
-
        signing_string = [@api_id, api_ts, path, canon_params].join("\n")
 
        OpenSSL::HMAC.hexdigest('sha1', @api_secret, signing_string)
