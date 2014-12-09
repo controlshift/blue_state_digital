@@ -24,6 +24,22 @@ describe BlueStateDigital::Contribution do
     :custom_fields
     ) }
 
+  describe 'as_json' do
+    let(:connection) { double }
+
+    it 'should include contribution_page_id and contribution_page_slug if they are set' do
+      contribution = BlueStateDigital::Contribution.new(attributes.merge({ connection: connection, contribution_page_slug: 'donate-here-12', contribution_page_id: 4 }))
+      expect(contribution.as_json).to include('contribution_page_id')
+      expect(contribution.as_json).to include('contribution_page_slug')
+    end
+
+    it 'should not include contribution_page_id and contribution_page_slug if they are not set' do
+      contribution = BlueStateDigital::Contribution.new(attributes.merge({ connection: connection }))
+      expect(contribution.as_json).not_to include('contribution_page_id')
+      expect(contribution.as_json).not_to include('contribution_page_slug')
+    end
+  end
+
   describe 'save' do
     let(:connection) { double }
     let(:contribution) { BlueStateDigital::Contribution.new(attributes.merge({ connection: connection })) }
