@@ -33,6 +33,13 @@ module BlueStateDigital
     ]
     attr_accessor *FIELDS
 
+    def as_json(options={})
+      fields_to_exclude = []
+      fields_to_exclude << :contribution_page_id if contribution_page_id.nil?
+      fields_to_exclude << :contribution_page_slug if contribution_page_slug.nil?
+      super(options.merge({except: fields_to_exclude}))
+    end
+
     def save
       begin
         if connection
