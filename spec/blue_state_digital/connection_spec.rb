@@ -21,7 +21,7 @@ describe BlueStateDigital::Connection do
             data.should =~ /name=string with multiple whitespaces/
           end
 
-          api_mac = connection.compute_hmac("/page/api#{api_call}", api_ts, { api_ver: '1', api_id: api_id, api_ts: api_ts, name: 'string with multiple whitespaces' })
+          api_mac = connection.compute_hmac("/page/api#{api_call}", api_ts, { api_ver: '2', api_id: api_id, api_ts: api_ts, name: 'string with multiple whitespaces' })
         end
       end
     end
@@ -34,9 +34,9 @@ describe BlueStateDigital::Connection do
         Timecop.freeze(timestamp) do
           api_call = '/somemethod'
           api_ts = timestamp.utc.to_i.to_s
-          api_mac = connection.compute_hmac("/page/api#{api_call}", api_ts, { api_ver: '1', api_id: api_id, api_ts: api_ts })
+          api_mac = connection.compute_hmac("/page/api#{api_call}", api_ts, { api_ver: '2', api_id: api_id, api_ts: api_ts })
 
-          stub_url = "https://#{api_host}/page/api/somemethod?api_id=#{api_id}&api_mac=#{api_mac}&api_ts=#{api_ts}&api_ver=1"
+          stub_url = "https://#{api_host}/page/api/somemethod?api_id=#{api_id}&api_mac=#{api_mac}&api_ts=#{api_ts}&api_ver=2"
           stub_request(:post, stub_url).with do |request|
             request.body.should == "a=b"
             request.headers['Accept'].should == 'text/xml'
@@ -85,9 +85,9 @@ describe BlueStateDigital::Connection do
       Timecop.freeze(timestamp) do
         api_call = '/somemethod'
         api_ts = timestamp.utc.to_i.to_s
-        api_mac = connection.compute_hmac("/page/api#{api_call}", api_ts, { api_ver: '1', api_id: api_id, api_ts: api_ts })
+        api_mac = connection.compute_hmac("/page/api#{api_call}", api_ts, { api_ver: '2', api_id: api_id, api_ts: api_ts })
 
-        stub_url = "https://#{api_host}/page/api/somemethod?api_id=#{api_id}&api_mac=#{api_mac}&api_ts=#{api_ts}&api_ver=1"
+        stub_url = "https://#{api_host}/page/api/somemethod?api_id=#{api_id}&api_mac=#{api_mac}&api_ts=#{api_ts}&api_ver=2"
         stub_request(:put, stub_url).with do |request|
           request.body.should == "a=b"
           request.headers['Accept'].should == 'text/xml'
@@ -105,9 +105,9 @@ describe BlueStateDigital::Connection do
       Timecop.freeze(timestamp) do
         api_call = '/somemethod'
         api_ts = timestamp.utc.to_i.to_s
-        api_mac = connection.compute_hmac("/page/api#{api_call}", api_ts, { api_ver: '1', api_id: api_id, api_ts: api_ts })
+        api_mac = connection.compute_hmac("/page/api#{api_call}", api_ts, { api_ver: '2', api_id: api_id, api_ts: api_ts })
 
-        stub_url = "https://#{api_host}/page/api/somemethod?api_id=#{api_id}&api_mac=#{api_mac}&api_ts=#{api_ts}&api_ver=1"
+        stub_url = "https://#{api_host}/page/api/somemethod?api_id=#{api_id}&api_mac=#{api_mac}&api_ts=#{api_ts}&api_ver=2"
         stub_request(:get, stub_url).to_return(body: "body")
 
         response = connection.perform_request(api_call, params = {})
@@ -139,8 +139,8 @@ describe BlueStateDigital::Connection do
 
   describe "#compute_hmac" do
     it "should compute proper hmac hash" do
-      params = { api_id: api_id, api_ts: '1272659462', api_ver: '1' }
-      connection.compute_hmac('/page/api/circle/list_circles', '1272659462', params).should == '88c7f0739a173af732736e6dc1bd97f237e23863'
+      params = { api_id: api_id, api_ts: '1272659462', api_ver: '2' }
+      connection.compute_hmac('/page/api/circle/list_circles', '1272659462', params).should == 'c4a31bdaabef52d609cbb5b01213fb267af4e808'
     end
   end
 end

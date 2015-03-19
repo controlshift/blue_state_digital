@@ -1,6 +1,6 @@
 module BlueStateDigital
   class Connection
-    API_VERSION = 1
+    API_VERSION = 2
     API_BASE = '/page/api'
     GRAPH_API_BASE = '/page/graph'
 
@@ -11,7 +11,9 @@ module BlueStateDigital
       @api_secret = params[:api_secret]
       @client = Faraday.new(:url => "https://#{params[:host]}/") do |faraday|
         faraday.request  :url_encoded             # form-encode POST params
-        faraday.response :logger                  # log requests to STDOUT
+        if defined?(Rails) && Rails.env.development?
+          faraday.response :logger                  # log requests to STDOUT
+        end
         faraday.response :raise_error
         faraday.adapter(params[:adapter] || Faraday.default_adapter)  # make requests with Net::HTTP by default
       end
