@@ -14,7 +14,7 @@ module BlueStateDigital
         if defined?(Rails) && Rails.env.development?
           faraday.response :logger                  # log requests to STDOUT
         end
-        faraday.response :raise_error
+        faraday.response :error_middleware
         faraday.adapter(params[:adapter] || Faraday.default_adapter)  # make requests with Net::HTTP by default
       end
       set_up_resources
