@@ -32,6 +32,7 @@ module BlueStateDigital
           accept = params.delete(:accept) || 'text/xml'
           req.url(path, extended_params(path, params))
           req.body = body
+          req.options.timeout = 120
           req.headers['Content-Type'] = content_type
           req.headers['Accept'] = accept
         end
