@@ -49,34 +49,41 @@ describe BlueStateDigital::Connection do
         end
       end
 
-      it "should override Content-Type with param" do
-        faraday_client = double(request: nil, response: nil, adapter: nil, options: {})
-        headers = {}
-        post_request = double(headers: headers, body: '', url: nil)
-        post_request.stub(:body=)
-        faraday_client.should_receive(:post).and_yield(post_request).and_return(post_request)
-        Faraday.stub(:new).and_yield(faraday_client).and_return(faraday_client)
-        connection = BlueStateDigital::Connection.new({host: api_host, api_id: api_id, api_secret: api_secret})
+      context 'well stubbed' do
+        before(:each) do
+          faraday_client = double(request: nil, response: nil, adapter: nil, options: {})
+          faraday_client.should_receive(:post).and_yield(post_request).and_return(post_request)
+          Faraday.stub(:new).and_yield(faraday_client).and_return(faraday_client)
+        end 
 
-        connection.perform_request '/somemethod', { content_type: 'application/json' }, 'POST'
+        let(:post_request) do
+          pr = double(headers: headers, body: '', url: nil)
+          pr.stub(:body=)
+          options = double()
+          options.stub(:timeout=)
+          pr.stub(:options).and_return(options)
+          pr
+        end
 
-        headers.keys.should include('Content-Type')
-        headers['Content-Type'].should == 'application/json'
-      end
+        let(:headers) { {} } 
 
-      it "should override Accept with param" do
-        faraday_client = double(request: nil, response: nil, adapter: nil, options: {})
-        headers = {}
-        post_request = double(headers: headers, body: '', url: nil)
-        post_request.stub(:body=)
-        faraday_client.should_receive(:post).and_yield(post_request).and_return(post_request)
-        Faraday.stub(:new).and_yield(faraday_client).and_return(faraday_client)
-        connection = BlueStateDigital::Connection.new({host: api_host, api_id: api_id, api_secret: api_secret})
+        it "should override Content-Type with param" do
+          connection = BlueStateDigital::Connection.new({host: api_host, api_id: api_id, api_secret: api_secret})
 
-        connection.perform_request '/somemethod', { accept: 'application/json' }, 'POST'
+          connection.perform_request '/somemethod', { content_type: 'application/json' }, 'POST'
 
-        headers.keys.should include('Accept')
-        headers['Accept'].should == 'application/json'
+          headers.keys.should include('Content-Type')
+          headers['Content-Type'].should == 'application/json'
+        end
+
+        it "should override Accept with param" do
+          connection = BlueStateDigital::Connection.new({host: api_host, api_id: api_id, api_secret: api_secret})
+
+          connection.perform_request '/somemethod', { accept: 'application/json' }, 'POST'
+
+          headers.keys.should include('Accept')
+          headers['Accept'].should == 'application/json'
+        end
       end
     end
 
