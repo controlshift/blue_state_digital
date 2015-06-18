@@ -1,9 +1,7 @@
 require 'openssl'
 require 'builder'
 require 'nokogiri'
-# There's a bug on Active Support that doesn't require the Autoload for core_ext classes
-require 'active_support/dependencies/autoload'
-require 'active_support/core_ext'
+require 'active_support/all'
 require 'active_model'
 require 'csv'
 require 'crack/xml'
