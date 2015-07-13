@@ -12,7 +12,7 @@ Configuration:
 
 ```ruby
 connection = BlueStateDigital::Connection.new(host:'foo.com' api_id: 'bar', api_secret: 'magic_secret')
-cons = BlueStateDigital::Constituent.new({firstname: 'Nathan', lastname: 'Woodhull', emails: [{ email: 'woodhull@gmail.com'}]}.merge({connection: connection}))
+cons = BlueStateDigital::Constituent.new({firstname: 'George', lastname: 'Washington', emails: [{ email: 'george@washington.com'}]}.merge({connection: connection}))
 cons.save
 cons.Id # created constituent ID
 ```
@@ -22,6 +22,14 @@ Use the event machine adapter:
 ```ruby
 connection = BlueStateDigital::Connection.new(host:'foo.com' api_id: 'bar', api_secret: 'magic_secret', adapter: :em_synchrony)
 ```
+
+### Unsubscribes
+
+```ruby
+connection = BlueStateDigital::Connection.new(host:'foo.com' api_id: 'bar', api_secret: 'magic_secret')
+unsub = BlueStateDigital::EmailUnsubscribe.new({email: 'george@washington.com', reason: 'tea in the harbor'}.merge({connection: connection}))
+unsub.unsubscribe! # raises on error, returns true on success.
+
 
 ### Dataset integration 
 
@@ -109,7 +117,6 @@ This deletes a personalization dataset map.
 ```ruby
 dataset_map=BlueStateDigital::DatasetMap.new({map_id: 111}.merge(connection: connection))
 dataset.delete
-```
 
 ## CI
 [![Build Status](https://secure.travis-ci.org/controlshift/blue_state_digital.png)](http://travis-ci.org/controlshift/blue_state_digital)
