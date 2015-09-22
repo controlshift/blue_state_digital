@@ -108,9 +108,9 @@ module BlueStateDigital
 
     def wait_for_deferred_result(deferred_id)
       result = nil
-      while result.nil?
+      while result.nil? || result.length == 0
         result = retrieve_results(deferred_id)
-        sleep(2) if result.nil?
+        sleep(2) if result.nil? || result.length == 0
       end
       result
     end
