@@ -27,8 +27,8 @@ Gem::Specification.new do |s|
   s.add_development_dependency "pry"
   s.add_development_dependency "pry-byebug"
   s.add_development_dependency "rb-fsevent"
-  s.add_dependency "activesupport"
-  s.add_dependency "activemodel"
+  s.add_dependency "activesupport", ">= 3"
+  s.add_dependency "activemodel", ">= 3"
   s.add_dependency "faraday", '>= 0.8.9'
   s.add_dependency "builder"
   s.add_dependency "nokogiri"
