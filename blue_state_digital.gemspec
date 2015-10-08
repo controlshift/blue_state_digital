@@ -18,7 +18,7 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
 
   # specify any dependencies here
-  s.add_development_dependency "rspec", "2.12.0"
+  s.add_development_dependency "rspec"
   s.add_development_dependency "webmock", "1.9.0"
   s.add_development_dependency "timecop"
   s.add_development_dependency "guard"
