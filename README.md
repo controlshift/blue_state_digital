@@ -29,7 +29,7 @@ connection = BlueStateDigital::Connection.new(host:'foo.com' api_id: 'bar', api_
 connection = BlueStateDigital::Connection.new(host:'foo.com' api_id: 'bar', api_secret: 'magic_secret')
 unsub = BlueStateDigital::EmailUnsubscribe.new({email: 'george@washington.com', reason: 'tea in the harbor'}.merge({connection: connection}))
 unsub.unsubscribe! # raises on error, returns true on success.
-
+```
 
 ### Dataset integration 
 
