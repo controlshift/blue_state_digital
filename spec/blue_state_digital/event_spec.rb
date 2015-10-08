@@ -11,14 +11,14 @@ describe BlueStateDigital::Event do
 
       event_json = JSON.parse(event.to_json)
 
-      event_json.keys.should_not include(:event_id_obfuscated)
+      expect(event_json.keys).not_to include(:event_id_obfuscated)
       [:event_type_id, :creator_cons_id, :name, :description, :venue_name, :venue_country, :venue_zip, :venue_city, :venue_state_cd].each do |direct_attribute|
-        event_json[direct_attribute.to_s].should == event_attributes[direct_attribute]
+        expect(event_json[direct_attribute.to_s]).to eq(event_attributes[direct_attribute])
       end
-      event_json['days'].count.should == 1
+      expect(event_json['days'].count).to eq(1)
       start_date = event_json['days'][0]['start_datetime_system']
-      Time.parse(start_date).should == start_date
-      event_json['days'][0]['duration'].should == 60
+      expect(Time.parse(start_date)).to eq(start_date)
+      expect(event_json['days'][0]['duration']).to eq(60)
     end
 
     it "should serialize event with event_id_obfuscated" do
@@ -28,12 +28,12 @@ describe BlueStateDigital::Event do
       event_json = JSON.parse(event.to_json)
 
       [:event_id_obfuscated, :event_type_id, :creator_cons_id, :name, :description, :venue_name, :venue_country, :venue_zip, :venue_city, :venue_state_cd].each do |direct_attribute|
-        event_json[direct_attribute.to_s].should == event_attributes[direct_attribute]
+        expect(event_json[direct_attribute.to_s]).to eq(event_attributes[direct_attribute])
       end
-      event_json['days'].count.should == 1
+      expect(event_json['days'].count).to eq(1)
       start_date = event_json['days'][0]['start_datetime_system']
-      Time.parse(start_date).should == start_date
-      event_json['days'][0]['duration'].should == 60
+      expect(Time.parse(start_date)).to eq(start_date)
+      expect(event_json['days'][0]['duration']).to eq(60)
     end
   end
 
@@ -42,8 +42,8 @@ describe BlueStateDigital::Event do
     let(:event) { BlueStateDigital::Event.new(event_attributes.merge({ connection: connection })) }
 
     before :each do
-      connection
-        .should_receive(:perform_request)
+      expect(connection)
+        .to receive(:perform_request)
         .with('/event/create_event', {accept: 'application/json', event_api_version: '2', values: event.to_json}, 'POST')
         .and_return(response)
     end
@@ -54,8 +54,8 @@ describe BlueStateDigital::Event do
       it "should perform API request and return event with event_id_obfuscated set" do
         saved_event = event.save
 
-        saved_event.should_not be_nil
-        saved_event.event_id_obfuscated.should == 'xyz'
+        expect(saved_event).not_to be_nil
+        expect(saved_event.event_id_obfuscated).to eq('xyz')
       end
     end
 

@@ -7,7 +7,7 @@ end
 describe BlueStateDigital::ApiDataModel do
   it "should initialize model with attributes" do
     model = DummyModel.new({ attr1: "1", attr2: "2" })
-    model.attr1.should == "1"
-    model.attr2.should == "2"
+    expect(model.attr1).to eq("1")
+    expect(model.attr2).to eq("2")
   end
 end

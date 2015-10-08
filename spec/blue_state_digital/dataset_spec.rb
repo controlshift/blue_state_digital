@@ -20,7 +20,7 @@ describe BlueStateDigital::Dataset do
     it "should accept dataset params" do
       dataset = BlueStateDigital::Dataset.new(dataset_attributes)
       dataset_attributes.each do |k,v|
-        dataset.send(k).should == v
+        expect(dataset.send(k)).to eq(v)
       end
     end
   end
@@ -31,21 +31,21 @@ describe BlueStateDigital::Dataset do
         [:slug,:map_type].each do |field|
           val = subject.send(field)
           subject.send("#{field}=",nil)
-          subject.should_not be_valid
-          subject.errors.full_messages.should == ["#{field} can't be blank"]
+          expect(subject).not_to be_valid
+          expect(subject.errors.full_messages).to eq(["#{field} can't be blank"])
           subject.send("#{field}=",val)
         end
       end
 
       it "should not error if there is no data" do
-        subject.data.should be_blank
-        subject.should be_valid
+        expect(subject.data).to be_blank
+        expect(subject).to be_valid
       end
 
       it "should error if there is data but no data header" do
         subject.add_data_row([1])
-        subject.should_not be_valid
-        subject.errors.full_messages.should == ["data_header is missing"]
+        expect(subject).not_to be_valid
+        expect(subject.errors.full_messages).to eq(["data_header is missing"])
       end
     end
 
@@ -56,8 +56,8 @@ describe BlueStateDigital::Dataset do
       let(:response) { Hashie::Mash.new(status: 202, body: "accepted") }
 
       before(:each) do
-        connection
-          .should_receive(:perform_request_raw)
+        expect(connection)
+          .to receive(:perform_request_raw)
           .with('/cons/upload_dataset', { api_ver: 2, slug: slug,map_type: map_type, content_type: "text/csv", accept: "application/json" }, 'PUT',csv)
           .and_return(response)
       end
@@ -66,7 +66,7 @@ describe BlueStateDigital::Dataset do
       it "should convert data into csv and dispatch" do
         subject.add_data_header(header)
         subject.add_data_row(row1)
-        subject.save.should be_true
+        expect(subject.save).to be_truthy
       end
 
       context "failure" do
@@ -75,7 +75,7 @@ describe BlueStateDigital::Dataset do
         it "should return false if save fails" do
           subject.add_data_header(header)
           subject.add_data_row(row1)
-          subject.save.should be_false
+          expect(subject.save).to be_falsey
         end
       end
     end
@@ -85,8 +85,8 @@ describe BlueStateDigital::Dataset do
     context "validations" do
       it "should complaing if map_id is not provided" do
         subject.dataset_id = nil
-        subject.delete.should be false
-        subject.errors.full_messages.should == ["dataset_id is missing"]
+        expect(subject.delete).to be false
+        expect(subject.errors.full_messages).to eq(["dataset_id is missing"])
       end
     end
 
@@ -95,8 +95,8 @@ describe BlueStateDigital::Dataset do
       let(:delete_payload){ {dataset_id: dataset_id} }
 
       before :each do
-        connection
-          .should_receive(:perform_request_raw)
+        expect(connection)
+          .to receive(:perform_request_raw)
           .with('/cons/delete_dataset', {api_ver: 2}, 'POST',delete_payload.to_json)
           .and_return(response)
       end
@@ -106,8 +106,8 @@ describe BlueStateDigital::Dataset do
 
         it "should return false if delete fails" do
           subject.dataset_id = dataset_id
-          subject.delete.should be_false
-          subject.errors.full_messages.should == ["web_service Something bad happened"]
+          expect(subject.delete).to be_falsey
+          expect(subject.errors.full_messages).to eq(["web_service Something bad happened"])
         end
       end
 
@@ -116,8 +116,8 @@ describe BlueStateDigital::Dataset do
 
         it "should return true" do
           subject.dataset_id = dataset_id
-          subject.delete.should be_true
-          subject.errors.full_messages.should == []
+          expect(subject.delete).to be_truthy
+          expect(subject.errors.full_messages).to eq([])
         end
       end
     end
@@ -153,17 +153,17 @@ describe BlueStateDigital::Dataset do
     end
 
     before :each do
-      connection
-        .should_receive(:perform_request)
+      expect(connection)
+        .to receive(:perform_request)
         .with('/cons/list_datasets', { api_ver: 2 }, 'GET')
         .and_return(response)
     end
 
     it "should fetch datasets" do
       datasets = connection.datasets.get_datasets
-      datasets.length.should == 2
-      datasets[0].to_json.should == dataset1.to_json
-      datasets[1].to_json.should == dataset2.to_json
+      expect(datasets.length).to eq(2)
+      expect(datasets[0].to_json).to eq(dataset1.to_json)
+      expect(datasets[1].to_json).to eq(dataset2.to_json)
     end
 
     context "failure" do

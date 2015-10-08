@@ -63,38 +63,38 @@ xml_string
 
   describe ".list_constituent_groups" do
     it "should return a list of groups" do
-      connection.should_receive(:perform_request).with('/cons_group/list_constituent_groups', {}, "GET").and_return(@multiple_cons_groups)
+      expect(connection).to receive(:perform_request).with('/cons_group/list_constituent_groups', {}, "GET").and_return(@multiple_cons_groups)
       groups = connection.constituent_groups.list_constituent_groups
-      groups.should be_a(Array)
-      groups.length.should == 2
+      expect(groups).to be_a(Array)
+      expect(groups.length).to eq(2)
     end
   end
 
   describe ".find_by_id" do
     it "should do a list comprehension to find a group in the list by id" do
-      connection.should_receive(:perform_request).with('/cons_group/get_constituent_group', {cons_group_id: 13}, "GET").and_return(@single_cons_groups)
+      expect(connection).to receive(:perform_request).with('/cons_group/get_constituent_group', {cons_group_id: 13}, "GET").and_return(@single_cons_groups)
       group = connection.constituent_groups.find_by_id(13)
-      group.should be_a(BlueStateDigital::ConstituentGroup)
-      group.id.should == '13'
+      expect(group).to be_a(BlueStateDigital::ConstituentGroup)
+      expect(group.id).to eq('13')
     end
 
     it "should handle an empty result" do
-      connection.should_receive(:perform_request).with('/cons_group/get_constituent_group', {cons_group_id: 13}, "GET").and_return(@empty_response)
+      expect(connection).to receive(:perform_request).with('/cons_group/get_constituent_group', {cons_group_id: 13}, "GET").and_return(@empty_response)
       group = connection.constituent_groups.find_by_id(13)
-      group.should be_nil
+      expect(group).to be_nil
     end
   end
 
   describe ".delete_constituent_groups" do
     it "should handle an array of integers" do
-      connection.should_receive(:perform_request).with('/cons_group/delete_constituent_groups', {:cons_group_ids=>"2,3"}, "POST").and_return("deferred_id")
-      connection.should_receive(:perform_request).with('/get_deferred_results', {deferred_id: "deferred_id"}, "GET").and_return(true)
+      expect(connection).to receive(:perform_request).with('/cons_group/delete_constituent_groups', {:cons_group_ids=>"2,3"}, "POST").and_return("deferred_id")
+      expect(connection).to receive(:perform_request).with('/get_deferred_results', {deferred_id: "deferred_id"}, "GET").and_return(true)
       connection.constituent_groups.delete_constituent_groups([2,3])
     end
 
     it "should handle a single integer" do
-      connection.should_receive(:perform_request).with('/cons_group/delete_constituent_groups', {:cons_group_ids=>"2"}, "POST").and_return("deferred_id")
-      connection.should_receive(:perform_request).with('/get_deferred_results', {deferred_id: "deferred_id"}, "GET").and_return(true)
+      expect(connection).to receive(:perform_request).with('/cons_group/delete_constituent_groups', {:cons_group_ids=>"2"}, "POST").and_return("deferred_id")
+      expect(connection).to receive(:perform_request).with('/get_deferred_results', {deferred_id: "deferred_id"}, "GET").and_return(true)
 
       connection.constituent_groups.delete_constituent_groups(2)
     end
@@ -132,22 +132,22 @@ xml_string
       attrs = { name: "Environment", slug: "environment", description: "Environment Group", group_type: "manual", create_dt: @timestamp }
 
 
-      connection.should_receive(:perform_request).with('/cons_group/get_constituent_group_by_slug', {slug:attrs[:slug]}, "GET") { @empty_response }
-      connection.should_receive(:perform_request).with('/cons_group/add_constituent_groups', {}, "POST", @new_group_xml) { @exists_response }
+      expect(connection).to receive(:perform_request).with('/cons_group/get_constituent_group_by_slug', {slug:attrs[:slug]}, "GET") { @empty_response }
+      expect(connection).to receive(:perform_request).with('/cons_group/add_constituent_groups', {}, "POST", @new_group_xml) { @exists_response }
 
       cons_group = connection.constituent_groups.find_or_create(attrs)
-      cons_group.id.should == '12'
+      expect(cons_group.id).to eq('12')
     end
 
 
     it "should not create group if it already exists" do
       attrs = { name: "Environment", slug: "environment", description: "Environment Group", group_type: "manual", create_dt: @timestamp }
 
-      connection.should_receive(:perform_request).with('/cons_group/get_constituent_group_by_slug', {slug:attrs[:slug]}, "GET") { @exists_response }
-      connection.should_not_receive(:perform_request).with('/cons_group/add_constituent_groups', {}, "POST", @new_group_xml)
+      expect(connection).to receive(:perform_request).with('/cons_group/get_constituent_group_by_slug', {slug:attrs[:slug]}, "GET") { @exists_response }
+      expect(connection).not_to receive(:perform_request).with('/cons_group/add_constituent_groups', {}, "POST", @new_group_xml)
 
       cons_group = connection.constituent_groups.find_or_create(attrs)
-      cons_group.id.should == '12'
+      expect(cons_group.id).to eq('12')
     end
   end
 
@@ -175,18 +175,18 @@ xml_string
 
       it "should create a group from an xml string" do
         response = connection.constituent_groups.send(:from_response, @response)
-        response.id.should == "12"
-        response.slug.should == 'q1donors'
+        expect(response.id).to eq("12")
+        expect(response.slug).to eq('q1donors')
       end
     end
 
     describe "multiple groups" do
       it "should create an array of groups from an xml string" do
         response = connection.constituent_groups.send(:from_response, @multiple_cons_groups)
-        response.should be_a(Array)
+        expect(response).to be_a(Array)
         first = response.first
-        first.id.should == "12"
-        first.slug.should == 'q1donors'
+        expect(first.id).to eq("12")
+        expect(first.slug).to eq('q1donors')
       end
     end
   end
@@ -199,8 +199,8 @@ xml_string
       cons_ids = ["1", "2"]
       post_params = { cons_group_id: cons_group_id, cons_ids: "1,2" }
 
-      connection.should_receive(:perform_request).with("/cons_group/#{method}", post_params, "POST").and_return("deferred_id")
-      connection.should_receive(:perform_request).with('/get_deferred_results', {deferred_id: "deferred_id"}, "GET").and_return(true)
+      expect(connection).to receive(:perform_request).with("/cons_group/#{method}", post_params, "POST").and_return("deferred_id")
+      expect(connection).to receive(:perform_request).with('/get_deferred_results', {deferred_id: "deferred_id"}, "GET").and_return(true)
 
       connection.constituent_groups.send(method.to_sym, cons_group_id, cons_ids)
     end
@@ -211,9 +211,9 @@ xml_string
       cons_group_id = "12"
       cons_ids = ["1", "2", "3", "4"]
 
-      connection.should_receive(:perform_request).with("/cons_group/#{method}", { cons_group_id: cons_group_id, cons_ids: "1,2" }, "POST").and_return("deferred_id")
-      connection.should_receive(:perform_request).with("/cons_group/#{method}", { cons_group_id: cons_group_id, cons_ids: "3,4" }, "POST").and_return("deferred_id")
-      connection.should_receive(:perform_request).with('/get_deferred_results', {deferred_id: "deferred_id"}, "GET").twice.and_return(true)
+      expect(connection).to receive(:perform_request).with("/cons_group/#{method}", { cons_group_id: cons_group_id, cons_ids: "1,2" }, "POST").and_return("deferred_id")
+      expect(connection).to receive(:perform_request).with("/cons_group/#{method}", { cons_group_id: cons_group_id, cons_ids: "3,4" }, "POST").and_return("deferred_id")
+      expect(connection).to receive(:perform_request).with('/get_deferred_results', {deferred_id: "deferred_id"}, "GET").twice.and_return(true)
 
       connection.constituent_groups.send(method.to_sym, cons_group_id, cons_ids)
     end
@@ -223,8 +223,8 @@ xml_string
       cons_ids = ["1", "2"]
       post_params = { cons_group_id: cons_group_id, cons_ids: "1,2" }
 
-      connection.should_receive(:perform_request).with("/cons_group/#{method}", post_params, "POST").and_return("deferred_id")
-      connection.should_not_receive(:perform_request).with('/get_deferred_results', {deferred_id: "deferred_id"}, "GET")
+      expect(connection).to receive(:perform_request).with("/cons_group/#{method}", post_params, "POST").and_return("deferred_id")
+      expect(connection).not_to receive(:perform_request).with('/get_deferred_results', {deferred_id: "deferred_id"}, "GET")
 
       connection.constituent_groups.send(method.to_sym, cons_group_id, cons_ids,  {wait_for_result: false})
     end
@@ -234,8 +234,8 @@ xml_string
       cons_ids = ["1"]
       post_params = { cons_group_id: cons_group_id, cons_ids: "1" }
 
-      connection.should_receive(:perform_request).with("/cons_group/#{method}", post_params, "POST").and_return("deferred_id")
-      connection.should_receive(:perform_request).with('/get_deferred_results', {deferred_id: "deferred_id"}, "GET").and_return(true)
+      expect(connection).to receive(:perform_request).with("/cons_group/#{method}", post_params, "POST").and_return("deferred_id")
+      expect(connection).to receive(:perform_request).with('/get_deferred_results', {deferred_id: "deferred_id"}, "GET").and_return(true)
 
       connection.constituent_groups.send(method.to_sym, cons_group_id, cons_ids)
     end
@@ -243,7 +243,7 @@ xml_string
 
 
   it "should rename the constituent group" do
-    connection.should_receive(:perform_request).with('/cons_group/rename_group', {cons_group_id: "1", new_name: "foo"}, "POST").and_return("")
+    expect(connection).to receive(:perform_request).with('/cons_group/rename_group', {cons_group_id: "1", new_name: "foo"}, "POST").and_return("")
     connection.constituent_groups.rename_group("1", "foo")
   end
 
@@ -252,18 +252,18 @@ xml_string
     new_cons_group_id = 1
     attrs = { name: "Environment", slug: "environment", description: "Environment Group", group_type: "manual", create_dt: @timestamp }
     new_group = double
-    new_group.stub(:id).and_return(new_cons_group_id)
+    allow(new_group).to receive(:id).and_return(new_cons_group_id)
 
     old_group = double
-    old_group.stub(:id).and_return(old_cons_group_id)
+    allow(old_group).to receive(:id).and_return(old_cons_group_id)
 
 
-    connection.constituent_groups.should_receive(:get_constituent_group).with(old_cons_group_id).and_return( old_group )
-    connection.constituent_groups.should_receive(:find_or_create).with(attrs).and_return( new_group )
-    connection.constituent_groups.should_receive(:get_cons_ids_for_group).with(old_cons_group_id).and_return( [1, 2, 3] )
-    connection.constituent_groups.should_receive(:add_cons_ids_to_group).with(new_cons_group_id, [1, 2, 3] )
-    connection.constituent_groups.should_receive(:delete_constituent_groups).with( old_cons_group_id )
+    expect(connection.constituent_groups).to receive(:get_constituent_group).with(old_cons_group_id).and_return( old_group )
+    expect(connection.constituent_groups).to receive(:find_or_create).with(attrs).and_return( new_group )
+    expect(connection.constituent_groups).to receive(:get_cons_ids_for_group).with(old_cons_group_id).and_return( [1, 2, 3] )
+    expect(connection.constituent_groups).to receive(:add_cons_ids_to_group).with(new_cons_group_id, [1, 2, 3] )
+    expect(connection.constituent_groups).to receive(:delete_constituent_groups).with( old_cons_group_id )
 
-    connection.constituent_groups.replace_constituent_group!(old_cons_group_id, attrs).should == new_group
+    expect(connection.constituent_groups.replace_constituent_group!(old_cons_group_id, attrs)).to eq(new_group)
   end
 end

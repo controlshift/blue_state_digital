@@ -21,11 +21,11 @@ describe BlueStateDigital::Constituent do
       end
       it "should allow constituent addresses entries as hashes" do 
         constituent = BlueStateDigital::Constituent.new addresses: [{addr1: 'one'}] 
-        constituent.to_xml.should == expected_result
+        expect(constituent.to_xml).to eq(expected_result)
       end
       it "should allow constituent addresses entries as BlueStateDigital::Addresses" do 
         constituent = BlueStateDigital::Constituent.new addresses: [BlueStateDigital::Address.new(addr1: 'one')] 
-        constituent.to_xml.should == expected_result
+        expect(constituent.to_xml).to eq(expected_result)
       end
 
     end
@@ -45,11 +45,11 @@ describe BlueStateDigital::Constituent do
       end
       it "should allow constituent addresses entries as hashes" do 
         constituent = BlueStateDigital::Constituent.new emails: [{email: 'one@two.com'}] 
-        constituent.to_xml.should == expected_result
+        expect(constituent.to_xml).to eq(expected_result)
       end
       it "should allow constituent addresses entries as BlueStateDigital::Addresses" do 
         constituent = BlueStateDigital::Constituent.new emails: [BlueStateDigital::Email.new(email: 'one@two.com')] 
-        constituent.to_xml.should == expected_result
+        expect(constituent.to_xml).to eq(expected_result)
       end
 
     end
@@ -69,11 +69,11 @@ describe BlueStateDigital::Constituent do
       end
       it "should allow constituent addresses entries as hashes" do 
         constituent = BlueStateDigital::Constituent.new phones: [{phone: '123321123'}] 
-        constituent.to_xml.should == expected_result
+        expect(constituent.to_xml).to eq(expected_result)
       end
       it "should allow constituent addresses entries as BlueStateDigital::Addresses" do 
         constituent = BlueStateDigital::Constituent.new phones: [BlueStateDigital::Phone.new(phone: '123321123')] 
-        constituent.to_xml.should == expected_result
+        expect(constituent.to_xml).to eq(expected_result)
       end
 
     end
@@ -93,7 +93,7 @@ describe BlueStateDigital::Constituent do
         it "should be present as #{param.to_s} tag in cons tag" do
           constituent = BlueStateDigital::Constituent.new 
           eval("constituent.#{param.to_s}='#{param.to_s}_value'")
-          constituent.to_xml.should == expected_result
+          expect(constituent.to_xml).to eq(expected_result)
         end 
 
       end
@@ -254,17 +254,17 @@ describe BlueStateDigital::Constituent do
 
     describe ".get_constituents_by_email" do
       it "should make a filtered constituents query" do
-        connection.should_receive(:perform_request).with('/cons/get_constituents', {:filter=>"email=george@washington.com", :bundles => 'cons_group'}, "GET").and_return("deferred_id")
-        connection.should_receive(:perform_request).with('/get_deferred_results', {deferred_id: "deferred_id"}, "GET").and_return(@single_constituent)
+        expect(connection).to receive(:perform_request).with('/cons/get_constituents', {:filter=>"email=george@washington.com", :bundles => 'cons_group'}, "GET").and_return("deferred_id")
+        expect(connection).to receive(:perform_request).with('/get_deferred_results', {deferred_id: "deferred_id"}, "GET").and_return(@single_constituent)
         response = connection.constituents.get_constituents_by_email("george@washington.com").first
-        response.id.should == "4382"
-        response.firstname.should == 'Bob'
+        expect(response.id).to eq("4382")
+        expect(response.firstname).to eq('Bob')
       end
 
       it "should return constituents' details based on bundles" do
         bundles = 'cons_addr'
-        connection.should_receive(:perform_request).with('/cons/get_constituents', {:filter=>"email=george@washington.com", :bundles => bundles}, "GET").and_return("deferred_id")
-        connection.should_receive(:perform_request).with('/get_deferred_results', {deferred_id: "deferred_id"}, "GET").and_return(@constituent_with_addr)
+        expect(connection).to receive(:perform_request).with('/cons/get_constituents', {:filter=>"email=george@washington.com", :bundles => bundles}, "GET").and_return("deferred_id")
+        expect(connection).to receive(:perform_request).with('/get_deferred_results', {deferred_id: "deferred_id"}, "GET").and_return(@constituent_with_addr)
         response = connection.constituents.get_constituents_by_email("george@washington.com", ['cons_addr']).first
         response.addresses[0].addr1 == "aaa1"
         response.addresses[0].addr2 == "aaa2"
@@ -273,76 +273,76 @@ describe BlueStateDigital::Constituent do
 
     describe ".get_constituents_by_id" do
       it "should return a constituent" do
-        connection.should_receive(:perform_request).with('/cons/get_constituents_by_id', {:cons_ids=>"23", :bundles => 'cons_group'}, "GET").and_return(@single_constituent)
+        expect(connection).to receive(:perform_request).with('/cons/get_constituents_by_id', {:cons_ids=>"23", :bundles => 'cons_group'}, "GET").and_return(@single_constituent)
         response = connection.constituents.get_constituents_by_id("23").first
-        response.id.should == "4382"
-        response.firstname.should == 'Bob'
+        expect(response.id).to eq("4382")
+        expect(response.firstname).to eq('Bob')
       end
     end
 
     describe ".from_response" do
       it "should set connection in generated constituents" do
         response = connection.constituents.send(:from_response, @single_constituent)
-        response.should be_a(Array)
-        response.size.should == 1
-        response.first.connection.should == connection
+        expect(response).to be_a(Array)
+        expect(response.size).to eq(1)
+        expect(response.first.connection).to eq(connection)
       end
 
       it "should create an array of constituents from a response that contains multiple constituents" do
         response = connection.constituents.send(:from_response, @multiple_constituents)
-        response.should be_a(Array)
+        expect(response).to be_a(Array)
         first = response.first
-        first.id.should == "4382"
-        first.firstname.should == 'Bob'
+        expect(first.id).to eq("4382")
+        expect(first.firstname).to eq('Bob')
       end
 
       it "should create an array of single constituent when only one is supplied" do
         response = connection.constituents.send(:from_response, @single_constituent)
-        response.should be_a(Array)
-        response.size.should == 1
-        response.first.id.should == "4382"
-        response.first.firstname.should == 'Bob'
-        response.first.gender.should == 'M'
+        expect(response).to be_a(Array)
+        expect(response.size).to eq(1)
+        expect(response.first.id).to eq("4382")
+        expect(response.first.firstname).to eq('Bob')
+        expect(response.first.gender).to eq('M')
       end
 
       it "should handle constituent group membership" do
         response = connection.constituents.send(:from_response, @constituent_with_groups).first
-        response.id.should == '4382'
-        response.group_ids.should == ["17", "41"]
+        expect(response.id).to eq('4382')
+        expect(response.group_ids).to eq(["17", "41"])
       end
 
       it "should handle single constituent group membership" do
         response = connection.constituents.send(:from_response, @constituent_with_group).first
-        response.id.should == '4382'
-        response.group_ids.should == ["41"]
+        expect(response.id).to eq('4382')
+        expect(response.group_ids).to eq(["41"])
       end
 
       it "Should handle constituent addresses" do
         response = connection.constituents.send(:from_response, @constituent_with_addr).first
-        response.addresses.size.should == 2
-        response.addresses[0].should be_a BlueStateDigital::Address
-        response.addresses[0].addr1.should == "yyy2"
-        response.addresses[0].addr2.should == "yyy3"
+        expect(response.addresses.size).to eq(2)
+        expect(response.addresses[0]).to be_a BlueStateDigital::Address
+        expect(response.addresses[0].addr1).to eq("yyy2")
+        expect(response.addresses[0].addr2).to eq("yyy3")
 
-        response.addresses[1].should be_a BlueStateDigital::Address
-        response.addresses[1].addr1.should == "xxx1"
-        response.addresses[1].addr2.should == "xxx2"
+        expect(response.addresses[1]).to be_a BlueStateDigital::Address
+        expect(response.addresses[1].addr1).to eq("xxx1")
+        expect(response.addresses[1].addr2).to eq("xxx2")
       end
 
       it "Should handle constituent email addresses" do
         response = connection.constituents.send(:from_response, @constituent_with_emails).first
-        response.emails.size.should == 2
-        response.emails[0].should be_a BlueStateDigital::Email
-        response.emails[0].email.should == "gil+punky1@thoughtworks.com"
-        response.emails[0].email_type.should == "personal"
-        response.emails[0].is_subscribed.should == "1"
-        response.emails[0].is_primary.should == "1"
+        expect(response.emails.size).to eq(2)
+        expect(response.emails[0]).to be_a BlueStateDigital::Email
+        expect(response.emails[0].email).to eq("gil+punky1@thoughtworks.com")
+        expect(response.emails[0].email_type).to eq("personal")
+        expect(response.emails[0].is_subscribed).to eq("1")
+        expect(response.emails[0].is_primary).to eq("1")
 
-        response.emails[1].should be_a BlueStateDigital::Email
-        response.emails[1].email.should == "fred@thoughtworks.com"
-        response.emails[1].email_type.should == "internal"
-        response.emails[1].is_subscribed.should == "0"
-        response.emails[1].is_primary.should == "0"
+        expect(response.emails[1]).to be_a BlueStateDigital::Email
+        expect(response.emails[1].email).to eq("fred@thoughtworks.com")
+        expect(response.emails[1].email_type).to eq("internal")
+        expect(response.emails[1].is_subscribed).to eq("0")
+        expect(response.emails[1].is_primary).to eq("0")
       end
 
     end
@@ -350,12 +350,12 @@ describe BlueStateDigital::Constituent do
 
   describe "delete_constituents_by_id" do
     it "should handle an array of integers" do
-      connection.should_receive(:perform_request).with('/cons/delete_constituents_by_id', {:cons_ids=>"2,3"}, "POST")
+      expect(connection).to receive(:perform_request).with('/cons/delete_constituents_by_id', {:cons_ids=>"2,3"}, "POST")
       connection.constituents.delete_constituents_by_id([2,3])
     end
 
     it "should handle a single integer" do
-      connection.should_receive(:perform_request).with('/cons/delete_constituents_by_id', {:cons_ids=>"2"}, "POST")
+      expect(connection).to receive(:perform_request).with('/cons/delete_constituents_by_id', {:cons_ids=>"2"}, "POST")
       connection.constituents.delete_constituents_by_id(2)
     end
   end
@@ -397,13 +397,13 @@ describe BlueStateDigital::Constituent do
     output << "</cons>"
     output << "</api>"
 
-    connection.should_receive(:perform_request).with('/cons/set_constituent_data', {}, "POST", input) { output }
+    expect(connection).to receive(:perform_request).with('/cons/set_constituent_data', {}, "POST", input) { output }
 
     cons_data = BlueStateDigital::Constituent.new(data)
     cons_data.save
-    cons_data.id.should == '329'
-    cons_data.is_new.should == '1'
-    cons_data.is_new?.should be_true
+    expect(cons_data.id).to eq('329')
+    expect(cons_data.is_new).to eq('1')
+    expect(cons_data.is_new?).to be_truthy
   end
 
   describe "#to_xml" do
@@ -416,7 +416,7 @@ describe BlueStateDigital::Constituent do
           addresses: [{ country: 'US', zip: '20001', is_primary: 1}],
           phones: [{phone: '123456789', phone_type: 'unknown'}]
       })
-      cons.to_xml.should_not be_nil
+      expect(cons.to_xml).not_to be_nil
     end
   end
 end

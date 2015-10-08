@@ -12,7 +12,7 @@ describe BlueStateDigital::Contribution do
     } 
   }
 
-  it { should have_fields(
+  it { is_expected.to have_fields(
     :external_id,
     :prefix,:firstname,:middlename,:lastname,:suffix,
     :transaction_dt,:transaction_amt,:cc_type_cd,:gateway_transaction_id,
@@ -45,8 +45,8 @@ describe BlueStateDigital::Contribution do
     let(:contribution) { BlueStateDigital::Contribution.new(attributes.merge({ connection: connection })) }
 
     before :each do
-      connection
-        .should_receive(:perform_request)
+      expect(connection)
+        .to receive(:perform_request)
         .with(
           '/contribution/add_external_contribution', 
           {accept: 'application/json'}, 
@@ -71,7 +71,7 @@ describe BlueStateDigital::Contribution do
 
       it "should perform API request" do
         saved_contribution = contribution.save
-        saved_contribution.should_not be_nil
+        expect(saved_contribution).not_to be_nil
       end
     end
 
