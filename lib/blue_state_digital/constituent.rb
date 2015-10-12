@@ -102,11 +102,11 @@ module BlueStateDigital
     def get_constituents_by_id(cons_ids, bundles = ['cons_group'])
       cons_ids_concat = cons_ids.is_a?(Array) ? cons_ids.join(',') : cons_ids.to_s
 
-      from_response(connection.perform_request('/cons/get_constituents_by_id', {:cons_ids => cons_ids_concat, :bundles=> bundles.join(',')}, "GET"))
+      from_response(connection.perform_request('/cons/get_constituents_by_id', filter_parameters({:cons_ids => cons_ids_concat, :bundles=> bundles.join(',')}), "GET"))
     end
 
     def get_constituents(filter, bundles = [ 'cons_group' ])
-      result = connection.wait_for_deferred_result( connection.perform_request('/cons/get_constituents', {:filter => filter, :bundles=> bundles.join(',')}, "GET") )
+      result = connection.wait_for_deferred_result( connection.perform_request('/cons/get_constituents', filter_parameters({:filter => filter, :bundles=> bundles.join(',')}), "GET") )
 
       from_response(result)
     end
@@ -173,6 +173,14 @@ module BlueStateDigital
       end
 
       cons
+    end
+
+    private
+
+    def filter_parameters(params) 
+      params.delete_if do |key, value|
+        value.blank?
+      end
     end
   end
 end
