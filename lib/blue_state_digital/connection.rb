@@ -1,4 +1,6 @@
 module BlueStateDigital
+  class DeferredResultTimeout < StandardError ; end
+
   class Connection
     API_VERSION = 2
     API_BASE = '/page/api'
@@ -106,11 +108,18 @@ module BlueStateDigital
       end
     end
 
-    def wait_for_deferred_result(deferred_id)
+    def wait_for_deferred_result(deferred_id, timeout = 600)
       result = nil
+      time_waiting = 0
       while result.nil? || (result.respond_to?(:length) && result.length == 0)
         result = retrieve_results(deferred_id)
-        sleep(2) if result.nil? || (result.respond_to?(:length) && result.length == 0)
+        if result.nil? || (result.respond_to?(:length) && result.length == 0)
+          time_waiting = time_waiting + 2
+          if time_waiting > timeout
+            raise BlueStateDigital::DeferredResultTimeout.new("exceeded timeout #{timeout} seconds waiting for #{deferred_id}")
+          end
+          sleep(2) 
+        end
       end
       result
     end

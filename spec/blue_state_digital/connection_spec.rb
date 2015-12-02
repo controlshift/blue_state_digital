@@ -142,6 +142,17 @@ describe BlueStateDigital::Connection do
       expect(connection).to receive(:perform_request).and_return("foo")
       expect(connection.get_deferred_results("deferred_id")).to eq("foo")
     end
+
+    it 'should raise if timeout occurs' do
+       expect(connection).to receive(:perform_request).and_return(nil)
+       expect { connection.wait_for_deferred_result("deferred_id", 1) }.to raise_error(BlueStateDigital::DeferredResultTimeout)
+    end
+
+    it 'should not raise if successful' do
+      expect(connection).to receive(:perform_request).and_return("foo")
+      expect(connection.wait_for_deferred_result("deferred_id")).to eq("foo")
+    end
+
   end
 
   describe "#compute_hmac" do
