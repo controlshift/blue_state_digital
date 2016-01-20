@@ -20,7 +20,8 @@ describe BlueStateDigital::SignupForm do
                                                             slug: 'foo'},
                                                            'POST', nil).and_return(response)
 
-      form = BlueStateDigital::SignupForm.clone(1, 'foo', 'Signup Form Foo', 'Sign Up Here', connection)
+      form = BlueStateDigital::SignupForm.clone(clone_from_id: 1, slug: 'foo', name: 'Signup Form Foo',
+                                                public_title: 'Sign Up Here', connection: connection)
       expect(form.id).to eq(3)
       expect(form.name).to eq('Signup Form Foo')
       expect(form.slug).to eq('foo')
