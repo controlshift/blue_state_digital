@@ -3,8 +3,8 @@ require 'spec_helper'
 describe BlueStateDigital::SignupForm do
   let(:connection) { BlueStateDigital::Connection.new({}) }
 
-  describe '#save' do
-    it 'should clone a form with the specified attributes' do
+  describe '.clone' do
+    it 'should create a new SignupForm' do
       response = <<-EOF
         <?xml version="1.0" encoding="utf-8"?>
         <api>
@@ -13,7 +13,6 @@ describe BlueStateDigital::SignupForm do
           </signup_form>
         </api>
       EOF
-
       expect(connection).to receive(:perform_request).with('/signup/clone_form',
                                                            {signup_form_id: 1,
                                                             title: 'Sign Up Here',
@@ -21,11 +20,11 @@ describe BlueStateDigital::SignupForm do
                                                             slug: 'foo'},
                                                            'POST', nil).and_return(response)
 
-      form = BlueStateDigital::SignupForm.new(clone_from_id: 1, signup_form_name: 'Signup Form Foo',
-                                              signup_form_slug: 'foo', form_public_title: 'Sign Up Here',
-                                              connection: connection)
-      form.save
+      form = BlueStateDigital::SignupForm.clone(1, 'foo', 'Signup Form Foo', 'Sign Up Here', connection)
       expect(form.id).to eq(3)
+      expect(form.name).to eq('Signup Form Foo')
+      expect(form.slug).to eq('foo')
+      expect(form.public_title).to eq('Sign Up Here')
     end
   end
 end
