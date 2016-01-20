@@ -25,6 +25,7 @@ require "blue_state_digital/dataset"
 require "blue_state_digital/dataset_map"
 require "blue_state_digital/error_middleware"
 require "blue_state_digital/email_unsubscribe"
+require "blue_state_digital/signup_form"
 
 
 I18n.enforce_available_locales = false
