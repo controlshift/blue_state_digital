@@ -40,11 +40,28 @@ module BlueStateDigital
       end
     end
 
+    # Takes a hash of {'field label' => 'field value'}
     def process_signup(data)
-      # TODO:
-      # construct XML with the data
-      # call process_signup endpoint
-      # return success or errors
+      # Construct the XML to send
+      builder = Builder::XmlMarkup.new
+      builder.instruct! :xml, version: '1.0', encoding: 'utf-8'
+      xml_body = builder.api do |api|
+        api.signup_form(id: self.id) do |form|
+          form_fields.each do |field|
+            form.signup_form_field(data[field.label], id: field.id)
+          end
+          form.email_opt_in(data['email_opt_in'])
+          # TODO: source, subsource?
+        end
+      end
+
+      # Post it to the endpoint
+      response = connection.perform_request_raw '/signup/process_signup', params, 'POST', nil
+      if response.status >= 200 && response.status < 300
+        return true
+      else
+        raise "process signup failed with message: #{response.body}"
+      end
     end
 
     private
