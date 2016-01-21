@@ -40,18 +40,23 @@ module BlueStateDigital
       end
     end
 
-    # Takes a hash of {'field label' => 'field value'}
+    # Takes a hash like {field_data: {'field label' => 'field value'}, email_opt_in: false, source: 'foo', subsource: 'bar'}
     def process_signup(data)
       # Construct the XML to send
+      field_data = data[:field_data]
       builder = Builder::XmlMarkup.new
       builder.instruct! :xml, version: '1.0', encoding: 'utf-8'
       xml_body = builder.api do |api|
         api.signup_form(id: self.id) do |form|
           form_fields.each do |field|
-            form.signup_form_field(data[field.label], id: field.id)
+            form.signup_form_field(field_data[field.label], id: field.id)
           end
-          form.email_opt_in(data['email_opt_in'] ? '1' : '0')
-          # TODO: source, subsource?
+          form.email_opt_in(data[:email_opt_in] ? '1' : '0')
+          [:source, :subsource].each do |key|
+            if data.has_key?(key)
+              form.source(data[key])
+            end
+          end
         end
       end
 
