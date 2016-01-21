@@ -1,8 +1,24 @@
 module BlueStateDigital
+  class SignupFormField < ApiDataModel
+    FIELDS = [:id, :format, :label, :description, :is_required, :is_custom_field, :cons_field_id, :create_dt]
+    attr_accessor *FIELDS
+
+    # Takes a <signup_form_field> block already processed by Nokogiri
+    def self.from_xml(xml_record)
+      SignupFormField.new(id: xml_record[:id],
+                          format: xml_record.xpath('format').text,
+                          label: xml_record.xpath('label').text,
+                          description: xml_record.xpath('description').text,
+                          is_required: xml_record.xpath('is_required').text == '1',
+                          is_custom_field: xml_record.xpath('is_custom_field').text == '1',
+                          cons_field_id: xml_record.xpath('cons_field_id').text.to_i,
+                          create_dt: xml_record.xpath('create_dt').text)
+    end
+  end
+
   class SignupForm < ApiDataModel
     FIELDS = [:id, :name, :slug, :public_title, :create_dt]
     attr_accessor *FIELDS
-    attr_accessor :form_fields
 
     def self.clone(options)
       clone_from_id = options[:clone_from_id]
@@ -25,7 +41,7 @@ module BlueStateDigital
     end
 
     def process_signup(data)
-      # TODO: fetch form fields if they don't exist yet
+      # TODO:
       # construct XML with the data
       # call process_signup endpoint
       # return success or errors
@@ -33,10 +49,17 @@ module BlueStateDigital
 
     private
 
-    def fetch_form_fields
-      # TODO: call list_form_fields and set form_fields with what comes back
+    def form_fields
+      if @_form_fields.nil?
+        xml_response = connection.perform_request '/signup/list_form_fields', {signup_form_id: id}, 'GET', nil
+        doc = Nokogiri::XML(xml_response)
+
+        @_form_fields = []
+        doc.xpath('//signup_form_field').each do |form_field_record|
+          @_form_fields << SignupFormField.from_xml(form_field_record)
+        end
+      end
+      @_form_fields
     end
   end
-
-  # TODO: SignupFormField class
 end
