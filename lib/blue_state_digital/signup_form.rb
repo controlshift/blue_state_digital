@@ -50,13 +50,13 @@ module BlueStateDigital
           form_fields.each do |field|
             form.signup_form_field(data[field.label], id: field.id)
           end
-          form.email_opt_in(data['email_opt_in'])
+          form.email_opt_in(data['email_opt_in'] ? '1' : '0')
           # TODO: source, subsource?
         end
       end
 
       # Post it to the endpoint
-      response = connection.perform_request_raw '/signup/process_signup', params, 'POST', nil
+      response = connection.perform_request_raw '/signup/process_signup', {}, 'POST', xml_body
       if response.status >= 200 && response.status < 300
         return true
       else
