@@ -52,11 +52,8 @@ module BlueStateDigital
             form.signup_form_field(field_data[field.label], id: field.id)
           end
           form.email_opt_in(data[:email_opt_in] ? '1' : '0')
-          [:source, :subsource].each do |key|
-            if data.has_key?(key)
-              form.source(data[key])
-            end
-          end
+          form.source(data[:source]) if data.has_key?(:source)
+          form.source(data[:subsource]) if data.has_key?(:subsource)
         end
       end
 
