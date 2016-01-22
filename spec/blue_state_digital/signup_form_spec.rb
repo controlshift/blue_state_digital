@@ -13,12 +13,11 @@ describe BlueStateDigital::SignupForm do
           </signup_form>
         </api>
       EOF
-      expect(connection).to receive(:perform_request).with('/signup/clone_form',
+      expect(connection).to receive(:perform_request).with('/signup/clone_form', {}, 'POST',
                                                            {signup_form_id: 1,
                                                             title: 'Sign Up Here',
                                                             signup_form_name: 'Signup Form Foo',
-                                                            slug: 'foo'},
-                                                           'POST', nil).and_return(response)
+                                                            slug: 'foo'}).and_return(response)
 
       form = BlueStateDigital::SignupForm.clone(clone_from_id: 1, slug: 'foo', name: 'Signup Form Foo',
                                                 public_title: 'Sign Up Here', connection: connection)

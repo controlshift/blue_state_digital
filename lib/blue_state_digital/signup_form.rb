@@ -28,7 +28,7 @@ module BlueStateDigital
       connection = options[:connection]
 
       params = {signup_form_id: clone_from_id, title: public_title, signup_form_name: name, slug: slug}
-      xml_response = connection.perform_request '/signup/clone_form', params, 'POST', nil
+      xml_response = connection.perform_request '/signup/clone_form', {}, 'POST', params
 
       doc = Nokogiri::XML(xml_response)
       record = doc.xpath('//signup_form').first
