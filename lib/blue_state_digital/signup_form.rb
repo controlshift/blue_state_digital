@@ -61,11 +61,23 @@ module BlueStateDigital
       end
 
       # Post it to the endpoint
-      response = connection.perform_request_raw '/signup/process_signup', {}, 'POST', xml_body
-      if response.status >= 200 && response.status < 300
-        return true
-      else
-        raise "process signup failed with message: #{response.body}"
+      begin
+        response = connection.perform_request_raw '/signup/process_signup', {}, 'POST', xml_body
+        if response.status >= 200 && response.status < 300
+          return true
+        else
+          raise "process signup failed with message: #{response.body}"
+        end
+      rescue BlueStateDigital::XmlErrorResponse => err
+        begin
+          errors = {}
+          error_xmls = Nokogiri::XML(err.message).xpath('//error')
+          error_xmls.each do |error_xml|
+            field = form_fields.select{|field| field.id.to_s == error_xml.xpath('signup_form_field_id').text}.first
+            errors[field.label] = error_xml.xpath('description').text
+            raise "process_signup failed with errors: #{errors}"
+          end
+        end
       end
     end
 

@@ -95,6 +95,8 @@ module BlueStateDigital
   end
 
   class Constituents < CollectionResource
+    # TODO: write a simple email->id func that doesn't use deferred results
+
     def get_constituents_by_email email, bundles= [ 'cons_group' ]
       get_constituents "email=#{email}", bundles
     end
