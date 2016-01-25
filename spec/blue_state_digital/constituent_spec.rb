@@ -254,8 +254,7 @@ describe BlueStateDigital::Constituent do
 
     describe ".get_constituents_by_email" do
       it "should make a filtered constituents query" do
-        expect(connection).to receive(:perform_request).with('/cons/get_constituents', {:filter=>"email=george@washington.com", :bundles => 'cons_group'}, "GET").and_return("deferred_id")
-        expect(connection).to receive(:perform_request).with('/get_deferred_results', {deferred_id: "deferred_id"}, "GET").and_return(@single_constituent)
+        expect(connection).to receive(:perform_request).with('/cons/get_constituents_by_email', {:emails=>"george@washington.com", :bundles => 'cons_group'}, "GET").and_return(@single_constituent)
         response = connection.constituents.get_constituents_by_email("george@washington.com").first
         expect(response.id).to eq("4382")
         expect(response.firstname).to eq('Bob')
@@ -263,8 +262,7 @@ describe BlueStateDigital::Constituent do
 
       it "should return constituents' details based on bundles" do
         bundles = 'cons_addr'
-        expect(connection).to receive(:perform_request).with('/cons/get_constituents', {:filter=>"email=george@washington.com", :bundles => bundles}, "GET").and_return("deferred_id")
-        expect(connection).to receive(:perform_request).with('/get_deferred_results', {deferred_id: "deferred_id"}, "GET").and_return(@constituent_with_addr)
+        expect(connection).to receive(:perform_request).with('/cons/get_constituents_by_email', {:emails=>"george@washington.com", :bundles => bundles}, "GET").and_return(@constituent_with_addr)
         response = connection.constituents.get_constituents_by_email("george@washington.com", ['cons_addr']).first
         response.addresses[0].addr1 == "aaa1"
         response.addresses[0].addr2 == "aaa2"
