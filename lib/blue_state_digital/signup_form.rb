@@ -53,7 +53,7 @@ module BlueStateDigital
           end
           form.email_opt_in(data[:email_opt_in] ? '1' : '0')
           form.source(data[:source]) if data.has_key?(:source)
-          form.source(data[:subsource]) if data.has_key?(:subsource)
+          form.subsource(data[:subsource]) if data.has_key?(:subsource)
         end
       end
 
