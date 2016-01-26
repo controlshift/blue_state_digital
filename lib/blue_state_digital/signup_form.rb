@@ -78,6 +78,10 @@ module BlueStateDigital
       end
     end
 
+    def set_cons_group(cons_group_id)
+      connection.perform_request('/signup/set_cons_group', {signup_form_id: self.id}, 'POST', {cons_group_id: cons_group_id})
+    end
+
     private
 
     def form_fields

@@ -89,4 +89,15 @@ describe BlueStateDigital::SignupForm do
       signup_form.process_signup({field_data: signup_data, email_opt_in: true, source: 'foo'})
     end
   end
+
+  describe '#set_cons_group' do
+    let(:signup_form) { BlueStateDigital::SignupForm.new(id: 3, name: 'A Form', slug: 'asdf', public_title: 'The Best Form', connection: connection) }
+    let(:cons_group_id) { 123 }
+
+    it 'should call set_cons_group' do
+      expect(connection).to receive(:perform_request).with('/signup/set_cons_group', {signup_form_id: signup_form.id}, 'POST', {cons_group_id: cons_group_id}).and_return('')
+
+      signup_form.set_cons_group(cons_group_id)
+    end
+  end
 end
