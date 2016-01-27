@@ -36,7 +36,7 @@ module BlueStateDigital
         id = record.xpath('id').text.to_i
         SignupForm.new(id: id, name: name, slug: slug, public_title: public_title, connection: connection)
       else
-        raise "Set constituent data failed with message: #{xml_response}"
+        raise "Cloning signup form failed with message: #{xml_response}"
       end
     end
 
