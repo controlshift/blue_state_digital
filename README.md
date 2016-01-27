@@ -39,8 +39,8 @@ signup_form = BlueStateDigital::SignupForm.clone(clone_from_id: 3, slug: 'foo', 
 signup_form.set_cons_group(2345)
 
 # The keys of the field_data hash should match the labels of the signup form's fields
-signup_form.process_signup({field_data: {'First Name' => 'George', 'Last Name' => 'Washington', 'Email Address' => 'george@example.com', 'A Custom Field' => 'some custom data'},
-                            email_opt_in: true, source: 'foo', subsource: 'bar'})
+signup_form.process_signup(field_data: {'First Name' => 'George', 'Last Name' => 'Washington', 'Email Address' => 'george@example.com', 'A Custom Field' => 'some custom data'},
+                           email_opt_in: true, source: 'foo', subsource: 'bar')
 ```
 
 ### Dataset integration 

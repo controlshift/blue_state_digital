@@ -86,7 +86,7 @@ describe BlueStateDigital::SignupForm do
       expect(connection).to receive(:perform_request_raw).with('/signup/process_signup', {}, 'POST', expected_body).and_return(double(body: '', status: 200))
 
       signup_data = {'First Name' => 'Susan', 'Middle Initial' => 'B', 'Last Name' => 'Anthony'}
-      signup_form.process_signup({field_data: signup_data, email_opt_in: true, source: 'foo'})
+      signup_form.process_signup(field_data: signup_data, email_opt_in: true, source: 'foo')
     end
   end
 
