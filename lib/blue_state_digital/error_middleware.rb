@@ -2,6 +2,7 @@ module BlueStateDigital
   class Unauthorized < ::Faraday::Error::ClientError ; end
   class ResourceDoesNotExist < ::Faraday::Error::ClientError ; end
   class EmailNotFound < ::Faraday::Error::ClientError ; end
+  class XmlErrorResponse < ::Faraday::Error::ClientError ; end
 
   class ErrorMiddleware < ::Faraday::Response::RaiseError
     def on_complete(env)
@@ -11,7 +12,9 @@ module BlueStateDigital
       when 403
         raise BlueStateDigital::Unauthorized, response_values(env).to_s
       when 409
-        if env.body =~ /does not exist/
+        if env.body =~ /<error>/
+          raise BlueStateDigital::XmlErrorResponse, env.body
+        elsif env.body =~ /does not exist/
           raise BlueStateDigital::ResourceDoesNotExist, response_values(env).to_s
         elsif env.body =~ /Email not found/
           raise BlueStateDigital::EmailNotFound, response_values(env).to_s

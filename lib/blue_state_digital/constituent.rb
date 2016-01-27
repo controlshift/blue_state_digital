@@ -96,7 +96,9 @@ module BlueStateDigital
 
   class Constituents < CollectionResource
     def get_constituents_by_email email, bundles= [ 'cons_group' ]
-      get_constituents "email=#{email}", bundles
+      result = connection.perform_request('/cons/get_constituents_by_email', filter_parameters({emails: email, :bundles=> bundles.join(',')}), "GET")
+
+      from_response(result)
     end
 
     def get_constituents_by_id(cons_ids, bundles = ['cons_group'])

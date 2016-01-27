@@ -31,6 +31,18 @@ unsub = BlueStateDigital::EmailUnsubscribe.new({email: 'george@washington.com', 
 unsub.unsubscribe! # raises on error, returns true on success.
 ```
 
+### Signup Forms
+
+```ruby
+connection = BlueStateDigital::Connection.new(host:'foo.com' api_id: 'bar', api_secret: 'magic_secret')
+signup_form = BlueStateDigital::SignupForm.clone(clone_from_id: 3, slug: 'foo', name: 'my new form', public_title: 'Sign Here For Puppies', connection: connection)
+signup_form.set_cons_group(2345)
+
+# The keys of the field_data hash should match the labels of the signup form's fields
+signup_form.process_signup(field_data: {'First Name' => 'George', 'Last Name' => 'Washington', 'Email Address' => 'george@example.com', 'A Custom Field' => 'some custom data'},
+                           email_opt_in: true, source: 'foo', subsource: 'bar')
+```
+
 ### Dataset integration 
 
 [BSD API for uploading Dataset](https://cshift.cp.bsd.net/page/api/doc#---------------------upload_dataset-----------------)
