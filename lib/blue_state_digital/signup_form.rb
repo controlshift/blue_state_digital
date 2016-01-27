@@ -20,13 +20,7 @@ module BlueStateDigital
     FIELDS = [:id, :name, :slug, :public_title, :create_dt]
     attr_accessor *FIELDS
 
-    def self.clone(options)
-      clone_from_id = options[:clone_from_id]
-      slug = options[:slug]
-      name = options[:name]
-      public_title = options[:public_title]
-      connection = options[:connection]
-
+    def self.clone(clone_from_id:, slug:, name:, public_title:, connection:)
       params = {signup_form_id: clone_from_id, title: public_title, signup_form_name: name, slug: slug}
       xml_response = connection.perform_request '/signup/clone_form', {}, 'POST', params
 
@@ -40,10 +34,9 @@ module BlueStateDigital
       end
     end
 
-    # Takes a hash like {field_data: {'field label' => 'field value'}, email_opt_in: false, source: 'foo', subsource: 'bar'}
-    def process_signup(data)
+    # field_data is a hash mapping field labels to field values, like {'First Name' => 'Alice'}
+    def process_signup(field_data:, email_opt_in: false, source: nil, subsource: nil)
       # Construct the XML to send
-      field_data = data[:field_data]
       builder = Builder::XmlMarkup.new
       builder.instruct! :xml, version: '1.0', encoding: 'utf-8'
       xml_body = builder.api do |api|
@@ -51,9 +44,9 @@ module BlueStateDigital
           form_fields.each do |field|
             form.signup_form_field(field_data[field.label], id: field.id)
           end
-          form.email_opt_in(data[:email_opt_in] ? '1' : '0')
-          form.source(data[:source]) if data.has_key?(:source)
-          form.subsource(data[:subsource]) if data.has_key?(:subsource)
+          form.email_opt_in(email_opt_in ? '1' : '0')
+          form.source(source) unless source.nil?
+          form.subsource(subsource) unless subsource.nil?
         end
       end
 
