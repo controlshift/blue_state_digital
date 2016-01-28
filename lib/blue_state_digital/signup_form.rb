@@ -75,8 +75,6 @@ module BlueStateDigital
       connection.perform_request('/signup/set_cons_group', {signup_form_id: self.id}, 'POST', {cons_group_id: cons_group_id})
     end
 
-    private
-
     def form_fields
       if @_form_fields.nil?
         xml_response = connection.perform_request '/signup/list_form_fields', {signup_form_id: id}, 'GET', nil
