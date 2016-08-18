@@ -8,9 +8,13 @@ module BlueStateDigital
 
     attr_reader :constituents, :constituent_groups, :datasets, :dataset_maps
 
+    attr_accessor :instrumentation
+
     def initialize(params = {})
       @api_id = params[:api_id]
       @api_secret = params[:api_secret]
+      self.instrumentation = params[:instrumentation]
+
       @client = Faraday.new(:url => "https://#{params[:host]}/") do |faraday|
         faraday.request  :url_encoded             # form-encode POST params
         if defined?(Rails) && Rails.env.development?
@@ -28,7 +32,7 @@ module BlueStateDigital
 
     def perform_request_raw(call, params = {}, method = "GET", body = nil)
       path = API_BASE + call
-      if method == "POST" || method == "PUT"
+      resp = if method == "POST" || method == "PUT"
         @client.send(method.downcase.to_sym) do |req|
           content_type = params.delete(:content_type) || 'application/x-www-form-urlencoded'
           accept = params.delete(:accept) || 'text/xml'
@@ -41,6 +45,16 @@ module BlueStateDigital
       else
         @client.get(path, extended_params(path, params))
       end
+
+      # instrumentation is a Proc that is called for each request that is performed.
+      if self.instrumentation
+        stats = {}
+        stats[:path] = path
+
+        self.instrumentation.call(stats)
+      end
+
+      resp
     end
 
     def perform_graph_request(call, params, method = 'POST')

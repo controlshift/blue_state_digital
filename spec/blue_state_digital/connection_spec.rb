@@ -27,6 +27,46 @@ describe BlueStateDigital::Connection do
     end
   end
 
+  describe '#perform_request_raw' do
+    let(:api_call) { '/somemethod' }
+    let(:timestamp) { Time.now }
+    let(:api_ts) { timestamp.utc.to_i.to_s }
+    let(:api_mac) { connection.compute_hmac("/page/api#{api_call}", api_ts, { api_ver: '2', api_id: api_id, api_ts: api_ts }) }
+
+    describe 'instrumentation' do
+      before(:each) do
+        Timecop.freeze(timestamp) do
+          stub_url = "https://#{api_host}/page/api/somemethod?api_id=#{api_id}&api_mac=#{api_mac}&api_ts=#{api_ts}&api_ver=2"
+          stub_request(:post, stub_url).with do |request|
+            expect(request.body).to eq("a=b")
+            expect(request.headers['Accept']).to eq('text/xml')
+            expect(request.headers['Content-Type']).to eq('application/x-www-form-urlencoded')
+            true
+          end.to_return(body: "body")
+        end
+      end
+
+      it 'should not instrument anything if instrumentation is nil' do
+        expect(connection.instrumentation).to be_nil
+        connection.perform_request(api_call, params = {}, method = "POST", body = "a=b")
+      end
+
+      context 'with instrumentation' do
+        let(:instrumentation) do
+          Proc.new do |stats|
+            stats[:path]
+          end
+        end
+        let(:connection) { BlueStateDigital::Connection.new({host: api_host, api_id: api_id, api_secret: api_secret, instrumentation: instrumentation})}
+
+        it 'should call if set to proc' do
+          expect(instrumentation).to receive(:call).with({path: '/page/api/somemethod'})
+          connection.perform_request(api_call, params = {}, method = "POST", body = "a=b")
+        end
+      end
+    end
+  end
+
   describe "#perform_request" do
     context 'POST' do
       it "should perform POST request" do
@@ -152,7 +192,6 @@ describe BlueStateDigital::Connection do
       expect(connection).to receive(:perform_request).and_return("foo")
       expect(connection.wait_for_deferred_result("deferred_id")).to eq("foo")
     end
-
   end
 
   describe "#compute_hmac" do
