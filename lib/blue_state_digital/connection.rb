@@ -50,7 +50,7 @@ module BlueStateDigital
       if self.instrumentation
         stats = {}
         stats[:path] = path
-
+        stats[:api_id] = @api_id
         self.instrumentation.call(stats)
       end
 

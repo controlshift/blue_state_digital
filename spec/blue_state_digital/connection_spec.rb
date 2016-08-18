@@ -60,7 +60,7 @@ describe BlueStateDigital::Connection do
         let(:connection) { BlueStateDigital::Connection.new({host: api_host, api_id: api_id, api_secret: api_secret, instrumentation: instrumentation})}
 
         it 'should call if set to proc' do
-          expect(instrumentation).to receive(:call).with({path: '/page/api/somemethod'})
+          expect(instrumentation).to receive(:call).with({path: '/page/api/somemethod', :api_id=>"sfrazer"})
           connection.perform_request(api_call, params = {}, method = "POST", body = "a=b")
         end
       end
