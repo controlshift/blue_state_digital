@@ -32,6 +32,15 @@ module BlueStateDigital
 
     def perform_request_raw(call, params = {}, method = "GET", body = nil)
       path = API_BASE + call
+
+      # instrumentation is a Proc that is called for each request that is performed.
+      if self.instrumentation
+        stats = {}
+        stats[:path] = path
+        stats[:api_id] = @api_id
+        self.instrumentation.call(stats)
+      end
+
       resp = if method == "POST" || method == "PUT"
         @client.send(method.downcase.to_sym) do |req|
           content_type = params.delete(:content_type) || 'application/x-www-form-urlencoded'
@@ -44,14 +53,6 @@ module BlueStateDigital
         end
       else
         @client.get(path, extended_params(path, params))
-      end
-
-      # instrumentation is a Proc that is called for each request that is performed.
-      if self.instrumentation
-        stats = {}
-        stats[:path] = path
-        stats[:api_id] = @api_id
-        self.instrumentation.call(stats)
       end
 
       resp
@@ -132,7 +133,7 @@ module BlueStateDigital
           if time_waiting > timeout
             raise BlueStateDigital::DeferredResultTimeout.new("exceeded timeout #{timeout} seconds waiting for #{deferred_id}")
           end
-          sleep(2) 
+          sleep(2)
         end
       end
       result
