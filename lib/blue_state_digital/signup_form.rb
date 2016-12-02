@@ -44,7 +44,9 @@ module BlueStateDigital
           form_fields.each do |field|
             form.signup_form_field(field_data[field.label], id: field.id)
           end
-          form.email_opt_in(email_opt_in ? '1' : '0')
+          unless email_opt_in.nil?
+            form.email_opt_in(email_opt_in ? '1' : '0')            
+          end
           form.source(source) unless source.nil?
           form.subsource(subsource) unless subsource.nil?
         end
