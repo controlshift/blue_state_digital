@@ -3,7 +3,7 @@ require 'spec_helper'
 describe BlueStateDigital::Event do
   let(:start_date) { Time.now }
   let(:end_date) { start_date + 1.hour }
-  let(:event_attributes) { {event_type_id: '1', creator_cons_id: '2', name: 'event 1', description: 'my event', venue_name: 'home', venue_country: 'US', venue_zip: '10001', venue_city: 'New York', venue_state_cd: 'NY', start_date: start_date, end_date: end_date} }
+  let(:event_attributes) { {event_type_id: '1', creator_cons_id: '2', name: 'event 1', description: 'my event', venue_name: 'home', venue_country: 'US', venue_zip: '10001', venue_city: 'New York', venue_state_cd: 'NY', start_date: start_date, end_date: end_date, local_timezone: 'America/New_York'} }
 
   describe '#to_json' do
     it "should serialize event without event_id_obfuscated" do
@@ -12,7 +12,7 @@ describe BlueStateDigital::Event do
       event_json = JSON.parse(event.to_json)
 
       expect(event_json.keys).not_to include(:event_id_obfuscated)
-      [:event_type_id, :creator_cons_id, :name, :description, :venue_name, :venue_country, :venue_zip, :venue_city, :venue_state_cd].each do |direct_attribute|
+      [:event_type_id, :creator_cons_id, :name, :description, :venue_name, :venue_country, :venue_zip, :venue_city, :venue_state_cd, :local_timezone].each do |direct_attribute|
         expect(event_json[direct_attribute.to_s]).to eq(event_attributes[direct_attribute])
       end
       expect(event_json['days'].count).to eq(1)
@@ -27,7 +27,7 @@ describe BlueStateDigital::Event do
 
       event_json = JSON.parse(event.to_json)
 
-      [:event_id_obfuscated, :event_type_id, :creator_cons_id, :name, :description, :venue_name, :venue_country, :venue_zip, :venue_city, :venue_state_cd].each do |direct_attribute|
+      [:event_id_obfuscated, :event_type_id, :creator_cons_id, :name, :description, :venue_name, :venue_country, :venue_zip, :venue_city, :venue_state_cd, :local_timezone].each do |direct_attribute|
         expect(event_json[direct_attribute.to_s]).to eq(event_attributes[direct_attribute])
       end
       expect(event_json['days'].count).to eq(1)
