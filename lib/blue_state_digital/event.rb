@@ -38,7 +38,7 @@ module BlueStateDigital
       end
 
       duration_in_minutes = ((end_date - start_date) / 60).to_i
-      day_attrs = { start_datetime_system: start_date.strftime('%Y-%m-%d %H:%M:%S %z'), duration: duration_in_minutes }
+      day_attrs = { start_datetime_system: start_date.strftime('%Y-%m-%d %H:%M:%S'), duration: duration_in_minutes }
       event_attrs[:days] = [ day_attrs ]
 
       event_attrs.to_json

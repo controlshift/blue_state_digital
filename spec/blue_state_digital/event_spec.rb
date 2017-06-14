@@ -1,7 +1,8 @@
 require 'spec_helper'
 
 describe BlueStateDigital::Event do
-  let(:start_date) { Time.now }
+  let(:time_zone) { Time.find_zone('America/New_York') }
+  let(:start_date) { time_zone.now.change(usec: 0) }
   let(:end_date) { start_date + 1.hour }
   let(:event_attributes) { {event_type_id: '1', creator_cons_id: '2', name: 'event 1', description: 'my event', venue_name: 'home', venue_country: 'US', venue_zip: '10001', venue_city: 'New York', venue_state_cd: 'NY', start_date: start_date, end_date: end_date, local_timezone: 'America/New_York'} }
 
@@ -16,8 +17,8 @@ describe BlueStateDigital::Event do
         expect(event_json[direct_attribute.to_s]).to eq(event_attributes[direct_attribute])
       end
       expect(event_json['days'].count).to eq(1)
-      start_date = event_json['days'][0]['start_datetime_system']
-      expect(Time.parse(start_date)).to eq(start_date)
+      start_date_serialized = event_json['days'][0]['start_datetime_system']
+      expect(time_zone.parse(start_date_serialized)).to eq(start_date)
       expect(event_json['days'][0]['duration']).to eq(60)
     end
 
@@ -31,8 +32,8 @@ describe BlueStateDigital::Event do
         expect(event_json[direct_attribute.to_s]).to eq(event_attributes[direct_attribute])
       end
       expect(event_json['days'].count).to eq(1)
-      start_date = event_json['days'][0]['start_datetime_system']
-      expect(Time.parse(start_date)).to eq(start_date)
+      start_date_serialized = event_json['days'][0]['start_datetime_system']
+      expect(time_zone.parse(start_date_serialized)).to eq(start_date)
       expect(event_json['days'][0]['duration']).to eq(60)
     end
   end
