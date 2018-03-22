@@ -11,22 +11,22 @@ gem blue_state_digital
 Configuration:
 
 ```ruby
-connection = BlueStateDigital::Connection.new(host:'foo.com' api_id: 'bar', api_secret: 'magic_secret')
+connection = BlueStateDigital::Connection.new(host:'foo.com', api_id: 'bar', api_secret: 'magic_secret')
 cons = BlueStateDigital::Constituent.new({firstname: 'George', lastname: 'Washington', emails: [{ email: 'george@washington.com'}]}.merge({connection: connection}))
 cons.save
-cons.Id # created constituent ID
+cons.id # created constituent ID
 ```
 
 Use the event machine adapter:
 
 ```ruby
-connection = BlueStateDigital::Connection.new(host:'foo.com' api_id: 'bar', api_secret: 'magic_secret', adapter: :em_synchrony)
+connection = BlueStateDigital::Connection.new(host:'foo.com', api_id: 'bar', api_secret: 'magic_secret', adapter: :em_synchrony)
 ```
 
 ### Unsubscribes
 
 ```ruby
-connection = BlueStateDigital::Connection.new(host:'foo.com' api_id: 'bar', api_secret: 'magic_secret')
+connection = BlueStateDigital::Connection.new(host:'foo.com', api_id: 'bar', api_secret: 'magic_secret')
 unsub = BlueStateDigital::EmailUnsubscribe.new({email: 'george@washington.com', reason: 'tea in the harbor'}.merge({connection: connection}))
 unsub.unsubscribe! # raises on error, returns true on success.
 ```
@@ -34,7 +34,7 @@ unsub.unsubscribe! # raises on error, returns true on success.
 ### Signup Forms
 
 ```ruby
-connection = BlueStateDigital::Connection.new(host:'foo.com' api_id: 'bar', api_secret: 'magic_secret')
+connection = BlueStateDigital::Connection.new(host:'foo.com', api_id: 'bar', api_secret: 'magic_secret')
 signup_form = BlueStateDigital::SignupForm.clone(clone_from_id: 3, slug: 'foo', name: 'my new form', public_title: 'Sign Here For Puppies', connection: connection)
 signup_form.set_cons_group(2345)
 fields = signup_form.form_fields  # returns a list of SignupFormField
