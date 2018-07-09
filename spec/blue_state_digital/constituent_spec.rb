@@ -395,7 +395,7 @@ describe BlueStateDigital::Constituent do
     output << "</cons>"
     output << "</api>"
 
-    expect(connection).to receive(:perform_request).with('/cons/set_constituent_data', {}, "POST", input) { output }
+    expect(connection).to receive(:perform_request).with('/cons/upsert_constituent_data', {}, "POST", input) { output }
 
     cons_data = BlueStateDigital::Constituent.new(data)
     cons_data.save

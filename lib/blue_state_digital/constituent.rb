@@ -11,7 +11,7 @@ module BlueStateDigital
     end
 
     def save
-      xml = connection.perform_request '/cons/set_constituent_data', {}, "POST", self.to_xml
+      xml = connection.wait_for_deferred_result(  connection.perform_request '/cons/upsert_constituent_data', {}, "POST", self.to_xml )
       doc = Nokogiri::XML(xml)
       record =  doc.xpath('//cons').first
       if record
