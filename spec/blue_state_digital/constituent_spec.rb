@@ -357,6 +357,7 @@ describe BlueStateDigital::Constituent do
       connection.constituents.delete_constituents_by_id(2)
     end
   end
+
   it "should set constituent data" do
     timestamp = Time.now.to_i
 
@@ -395,7 +396,10 @@ describe BlueStateDigital::Constituent do
     output << "</cons>"
     output << "</api>"
 
-    expect(connection).to receive(:perform_request).with('/cons/upsert_constituent_data', {}, "POST", input) { output }
+    deferred_result_id = '123'
+
+    expect(connection).to receive(:wait_for_deferred_result).with(deferred_result_id).and_return(output)
+    expect(connection).to receive(:perform_request).with('/cons/upsert_constituent_data', {}, "POST", input) { deferred_result_id }
 
     cons_data = BlueStateDigital::Constituent.new(data)
     cons_data.save

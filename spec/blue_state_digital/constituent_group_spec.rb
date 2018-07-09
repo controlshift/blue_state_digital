@@ -226,7 +226,7 @@ xml_string
       expect(connection).to receive(:perform_request).with("/cons_group/#{method}", post_params, "POST").and_return("deferred_id")
       expect(connection).not_to receive(:perform_request).with('/get_deferred_results', {deferred_id: "deferred_id"}, "GET")
 
-      connection.constituent_groups.send(method.to_sym, cons_group_id, cons_ids,  {wait_for_result: false})
+      connection.constituent_groups.send(method.to_sym, cons_group_id, cons_ids, {wait_for_result: false})
     end
 
     it "should #{operation} a single constituent id to a group" do

@@ -13,12 +13,12 @@ module BlueStateDigital
     def save
       xml = connection.wait_for_deferred_result(  connection.perform_request '/cons/upsert_constituent_data', {}, "POST", self.to_xml )
       doc = Nokogiri::XML(xml)
-      record =  doc.xpath('//cons').first
+      record = doc.xpath('//cons').first
       if record
         self.id = record[:id]
         self.is_new = record[:is_new]
       else
-        raise "Set constituent data failed with message: #{xml}"
+        raise "upsert_constituent_data failed with message: #{xml}"
       end
       self
     end
